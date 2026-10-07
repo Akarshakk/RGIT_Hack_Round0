@@ -2,12 +2,15 @@
 import json
 import os
 import re
+import time
 
 from app import analytics as an
 from app import grounding
 from app.categorize import CATEGORIES
 
 MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
+FALLBACK = os.environ.get("GROQ_FALLBACK_MODEL", "openai/gpt-oss-20b")  # separate rate-limit bucket on Groq
+HISTORY_TURNS = 3  # user turns of history sent to the model; the free tier allows 8k tokens/minute
 MAX_TURNS = 8
 
 SYSTEM = """You are Credence, a friendly Indian personal-finance coach. You help the user understand their own bank statement and save money.
@@ -99,6 +102,41 @@ def run_tool(df, name, args):
     return FUNCS[name](df, **args)
 
 
+def _create(client, groq, messages, tries=3):
+    """Start a streamed completion. On a rate limit, switch to the fallback model (its own quota) before waiting; also
+    retries transient server errors and the model's occasional malformed tool call (Groq 400 tool_use_failed)."""
+    models = [MODEL, FALLBACK] if FALLBACK and FALLBACK != MODEL else [MODEL]
+    for i in range(tries):
+        model = models[min(i, len(models) - 1)]
+        try:
+            return client.chat.completions.create(model=model, messages=messages, tools=TOOLS, tool_choice="auto", stream=True,
+                                                  max_tokens=2048, temperature=0.2, reasoning_effort="low")
+        except (getattr(groq, "RateLimitError", ()), getattr(groq, "InternalServerError", ()), getattr(groq, "APIConnectionError", ())):
+            if i == tries - 1:
+                raise
+            if i + 1 >= len(models):
+                time.sleep(2.0 * i)
+        except getattr(groq, "BadRequestError", ()) as e:
+            if "tool_use_failed" not in str(e) or i == tries - 1:
+                raise
+            print("retrying malformed tool call")
+
+
+def _for_model(result):
+    """Tool result as the model sees it: evidence row-id lists dropped (the UI receipt keeps the full result)."""
+    if isinstance(result, dict):
+        return {k: _for_model(v) for k, v in result.items() if k not in ("ids", "evidence_ids")}
+    if isinstance(result, list):
+        return [_for_model(v) for v in result]
+    return result
+
+
+def _recent(msgs):
+    """The last HISTORY_TURNS user turns with their tool calls, cut at a user message so tool pairs stay intact."""
+    starts = [i for i, m in enumerate(msgs) if m["role"] == "user"]
+    return msgs[starts[-HISTORY_TURNS]:] if len(starts) > HISTORY_TURNS else msgs
+
+
 def stream_chat(session, user_text, client=None):
     """Yields (event, data): ('text', delta) | ('receipt', {tool,args,result}) | ('usage', {...}) | ('notice', msg) | ('done', None)."""
     if client is None:
@@ -107,7 +145,7 @@ def stream_chat(session, user_text, client=None):
             yield "done", None
             return
         import groq
-        client = groq.Groq()
+        client = groq.Groq(max_retries=0)  # _create handles retries and the fallback model
     import groq
 
     df = redact(session["df"])
@@ -117,8 +155,7 @@ def stream_chat(session, user_text, client=None):
     try:
         for _ in range(MAX_TURNS):
             text, calls, finish, usage = "", {}, None, None
-            for chunk in client.chat.completions.create(model=MODEL, messages=[{"role": "system", "content": SYSTEM}] + msgs, tools=TOOLS,
-                                                        tool_choice="auto", stream=True, max_tokens=2048, temperature=0.2, reasoning_effort="low"):
+            for chunk in _create(client, groq, messages=[{"role": "system", "content": SYSTEM}] + _recent(msgs)):
                 usage = getattr(getattr(chunk, "x_groq", None), "usage", None) or getattr(chunk, "usage", None) or usage
                 if not chunk.choices:
                     continue
@@ -147,12 +184,15 @@ def stream_chat(session, user_text, client=None):
                 try:
                     args = json.loads(c["arguments"] or "{}")
                     out = run_tool(df, c["name"], args)
-                    msgs.append({"role": "tool", "tool_call_id": c["id"], "content": json.dumps(out)})
+                    msgs.append({"role": "tool", "tool_call_id": c["id"], "content": json.dumps(_for_model(out), ensure_ascii=False)})
                     results.append(out)
                     yield "receipt", {"tool": c["name"], "args": args, "result": out}
                 except Exception as e:
                     msgs.append({"role": "tool", "tool_call_id": c["id"], "content": f"error: {e}"})
+    except groq.RateLimitError:
+        yield "notice", "The AI is getting a lot of questions right now (rate limit). Try again in a few seconds."
     except groq.APIError as e:
+        print("chat error:", type(e).__name__, getattr(e, "message", e))
         yield "notice", f"The AI service had a problem ({type(e).__name__}). Please try again."
     if answer:
         yield "grounding", grounding.check(answer, results, user_text)

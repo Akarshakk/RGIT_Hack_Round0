@@ -490,7 +490,7 @@ pre.rbox { flex-basis: 100%; background: var(--ink); border: 1px solid var(--lin
 .future-grid { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 28px; align-items: start; }
 .future-controls { display: grid; gap: 8px; font-size: 14px; color: var(--muted); }
 .future-controls label b { color: var(--cream); font-family: var(--f-display); font-weight: 600; }
-.big-in input { font: 800 22px var(--f-display); width: 150px; background: var(--ink); border: 1.5px solid var(--line-2); border-radius: 12px; padding: 8px 12px; }
+.big-in input { font: 800 22px var(--f-display); color: var(--cream); width: 150px; background: var(--ink); border: 1.5px solid var(--line-2); border-radius: 12px; padding: 8px 12px; }
 .big-in input:focus { border-color: var(--turmeric); outline: none; }
 .future-controls .slider { margin-bottom: 4px; }
 .seg { display: inline-flex; background: var(--ink); border: 1px solid var(--line-2); border-radius: 999px; padding: 3px; width: fit-content; }
