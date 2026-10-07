@@ -74,6 +74,16 @@ def _redact(s, p):
 
 
 _LLM_CACHE = {}  # merchant_key -> category, in memory per process
+CATEGORY_GUIDE = """- Food & Dining: restaurants, cafes, food delivery, bakeries, dessert and snack chains (e.g. zomato, starbucks, haldiram)
+- Groceries: supermarkets, kirana, quick-commerce, milk and vegetable delivery (e.g. bigbasket, dmart, blinkit)
+- Transport: cabs, bikes and scooters for hire, metro, fuel, flights, trains, buses and travel booking (e.g. uber, rapido, irctc, makemytrip)
+- Shopping: clothes, electronics, beauty, home and furniture, general e-commerce (e.g. myntra, croma, nykaa, ikea)
+- Subscriptions: recurring digital services: video, music, audio, apps, cloud (e.g. netflix, spotify, audible)
+- Entertainment: one-off movies, events, gaming (e.g. bookmyshow, pvr, steam)
+- Health & Fitness: pharmacies, diagnostics labs, doctors, hospitals, gyms (e.g. pharmeasy, practo, cultfit)
+- Education: courses, test prep, tuition, learning apps (e.g. unacademy, udemy, byjus)
+- Utilities & Bills: electricity, water, gas, broadband, DTH, mobile recharge (e.g. bescom, tatapower, airtel, jio)
+- Rent, EMI & Loans, Insurance-like premiums (EMI & Loans), Investments, Fees & Charges, Cash Withdrawal, Transfers, Income, Other: as named"""
 
 
 def _llm_categorize(items):
@@ -84,8 +94,9 @@ def _llm_categorize(items):
             import groq
             r = groq.Groq(max_retries=4).chat.completions.create(
                 model=MODEL, temperature=0, max_tokens=6000, reasoning_effort="low", response_format={"type": "json_object"}, messages=[
-                    {"role": "system", "content": "You categorize Indian bank-statement transactions. Each item is a merchant key and one example "
-                     "narration (personal data already masked). Allowed categories: " + json.dumps(CATEGORIES) + '. Reply with JSON '
+                    {"role": "system", "content": "You categorize Indian bank-statement transactions. Each item is a merchant key (usually the "
+                     "UPI handle of a brand) and one example narration (personal data already masked). Use your knowledge of Indian brands. "
+                     "Allowed categories, with what belongs in each:\n" + CATEGORY_GUIDE + '\nReply with JSON '
                      '{"results": [{"merchant_key": str, "category": one allowed category, "confidence": 0-1}]} and nothing else.'},
                     {"role": "user", "content": json.dumps(todo)}])
             for x in json.loads(r.choices[0].message.content)["results"]:
