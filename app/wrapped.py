@@ -245,14 +245,17 @@ def ai_quips(story, client=None):
         import groq
         client = groq.Groq()
     payload = {c["id"]: {"headline": c["big"], "detail": c["sub"], "eyebrow": c["eyebrow"]} for c in story["cards"]}
-    try:
-        r = client.chat.completions.create(
-            model=os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b"), temperature=0.9, max_tokens=6000, reasoning_effort="low",
-            response_format={"type": "json_object"},
-            messages=[{"role": "system", "content": QUIP_SYSTEM}, {"role": "user", "content": json.dumps(payload, ensure_ascii=False)}])
-        out = json.loads(r.choices[0].message.content).get("cards", {})
-    except Exception as e:  # never break the story because of the model
-        print("wrapped quips skipped:", type(e).__name__, e)
+    out = None
+    for model in dict.fromkeys([os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b"), os.environ.get("GROQ_FALLBACK_MODEL", "openai/gpt-oss-20b")]):
+        try:
+            r = client.chat.completions.create(
+                model=model, temperature=0.9, max_tokens=6000, reasoning_effort="low", response_format={"type": "json_object"},
+                messages=[{"role": "system", "content": QUIP_SYSTEM}, {"role": "user", "content": json.dumps(payload, ensure_ascii=False)}])
+            out = json.loads(r.choices[0].message.content).get("cards", {})
+            break
+        except Exception as e:  # never break the story because of the model: try the fallback model, then keep templates
+            print("wrapped quips:", model, type(e).__name__, str(e)[:160])
+    if not out:
         return {}
     good = {}
     for c in story["cards"]:

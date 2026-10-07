@@ -51,16 +51,22 @@ def main():
     Q = json.loads((ROOT / "eval/questions.json").read_text())
     rows, cost, lat = [], 0.0, 0.0
     for q in Q:
-        session = dict(df=df, history=[])  # fresh conversation per question
-        reply, tools, results, c, t0 = "", [], [], 0.0, time.time()
-        for ev, d in stream_chat(session, q["q"]):
-            if ev in ("text", "notice"):
-                reply += d
-            elif ev == "receipt":
-                tools.append(d["tool"]); results.append(d["result"])
-            elif ev == "usage":
-                c += sum(PRICE[k] * v for k, v in d.items())
+        for attempt in range(4):  # Groq's free tier allows 8k tokens/min: wait out rate limits instead of scoring them
+            session = dict(df=df, history=[])  # fresh conversation per question
+            reply, tools, results, c, t0 = "", [], [], 0.0, time.time()
+            for ev, d in stream_chat(session, q["q"]):
+                if ev in ("text", "notice"):
+                    reply += d
+                elif ev == "receipt":
+                    tools.append(d["tool"]); results.append(d["result"])
+                elif ev == "usage":
+                    c += sum(PRICE[k] * v for k, v in d.items())
+            if "rate limit" not in reply:
+                break
+            print("  rate limited, waiting 30s:", q["q"])
+            time.sleep(30)
         lat += time.time() - t0; cost += c
+        time.sleep(4)
         rows.append((q, reply, score(q, reply, tools, results)))
     ok = lambda r: all(v for k, v in r.items() if k != "grounded")
     for q, _, r in rows:
@@ -75,6 +81,9 @@ def main():
           "", "| Question | Result | Grounded |", "|---|---|---|"]
     for q, reply, r in rows:
         md.append(f"| {q['q']} | {'PASS' if ok(r) else 'FAIL ' + str({k: v for k, v in r.items() if v is False})} | {r['grounded'][0]}/{r['grounded'][1]} |")
+    md += ["", "## Answers", ""]
+    for q, reply, r in rows:
+        md += [f"**{q['q']}**", "", "> " + reply.strip().replace("\n", "\n> ")[:900], ""]
     (ROOT / "eval/results.md").write_text("\n".join(md) + "\n")
     print("\n".join(md[:8]))
 

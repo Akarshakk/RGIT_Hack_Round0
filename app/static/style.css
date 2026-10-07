@@ -493,9 +493,9 @@ pre.rbox { flex-basis: 100%; background: var(--ink); border: 1px solid var(--lin
 .big-in input { font: 800 22px var(--f-display); color: var(--cream); width: 150px; background: var(--ink); border: 1.5px solid var(--line-2); border-radius: 12px; padding: 8px 12px; }
 .big-in input:focus { border-color: var(--turmeric); outline: none; }
 .future-controls .slider { margin-bottom: 4px; }
-.seg { display: inline-flex; background: var(--ink); border: 1px solid var(--line-2); border-radius: 999px; padding: 3px; width: fit-content; }
-.seg button { border: 0; background: transparent; border-radius: 999px; padding: 7px 14px; font: 600 13px var(--f-display); color: var(--muted); }
-.seg button[aria-pressed="true"] { background: var(--mint); color: var(--ink); }
+.rate-pick { display: inline-flex; background: var(--ink); border: 1px solid var(--line-2); border-radius: 999px; padding: 3px; width: fit-content; }
+.rate-pick button { border: 0; background: transparent; border-radius: 999px; padding: 7px 14px; font: 600 13px var(--f-display); color: var(--muted); }
+.rate-pick button[aria-pressed="true"] { background: var(--mint); color: var(--ink); }
 .fy-line { font-size: 16px; line-height: 1.45; margin-bottom: 10px; }
 .fy-line b { font: 900 30px/1.1 var(--f-display); color: var(--mint); letter-spacing: -.03em; display: block; }
 .fy-chart { position: relative; }

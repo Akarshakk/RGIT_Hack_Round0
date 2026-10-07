@@ -198,9 +198,13 @@ function drawDonut(animate) {
 
   segs.forEach((s) => {
     s.el.addEventListener("mouseenter", () => hoverCat(s.c.category));
-    s.el.addEventListener("mouseleave", () => hoverCat(null));
+    s.el.addEventListener("mouseleave", () => donutState.hover === s.c.category && hoverCat(null));
     s.el.addEventListener("click", () => setTxFilter(s.c.category));
   });
+  if (animate && !reduce) { // slices rotate in; hovering mid-flight fires enter/leave out of order
+    svg.style.pointerEvents = "none";
+    setTimeout(() => (svg.style.pointerEvents = ""), 1200);
+  }
   donutState.segs = segs;
   donutState.total = total;
   hoverCat(null);
@@ -208,6 +212,7 @@ function drawDonut(animate) {
 
 function hoverCat(cat) {
   const svg = $("donut"), segs = donutState.segs || [];
+  donutState.hover = cat;
   svg.classList.toggle("has-hover", !!cat);
   $("legend").classList.toggle("has-hover", !!cat);
   segs.forEach((s) => {
@@ -234,7 +239,7 @@ function renderLegend() {
     </li>`).join("");
   [...$("legend").children].forEach((li) => {
     li.onmouseenter = () => hoverCat(li.dataset.cat);
-    li.onmouseleave = () => hoverCat(null);
+    li.onmouseleave = () => donutState.hover === li.dataset.cat && hoverCat(null);
     li.onclick = () => setTxFilter(li.dataset.cat);
   });
 }
@@ -278,7 +283,9 @@ function drawMonths(animate) {
       const box = svg.getBoundingClientRect();
       const x = (left + slot * i + slot / 2) / W * box.width;
       tip.style.left = Math.min(Math.max(x, 100), box.width - 100) + "px";
-      tip.style.top = (y(totals[i]) / H * box.height) + "px";
+      const top = y(totals[i]) / H * box.height;
+      tip.style.top = top + "px";
+      tip.style.transform = box.top + top < 260 ? "translate(-50%, 16px)" : ""; // no room above: show below the bar top
       tip.hidden = false;
     });
     g.addEventListener("mouseleave", () => { svg.classList.remove("has-hover"); g.classList.remove("on"); tip.hidden = true; });

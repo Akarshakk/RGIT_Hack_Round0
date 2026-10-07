@@ -36,14 +36,21 @@ Style: a direct answer first, then at most three short bullets. Prefer bullets o
 
 PERIOD = {"type": ["string", "null"], "description": "'last_month', a month like '2026-08', or null for all data"}
 STR = lambda d: {"type": ["string", "null"], "description": d}
-_CHANGE = {"type": "object", "additionalProperties": False, "required": ["category", "merchant", "cut_pct"], "properties": {
+_CHANGE = {"type": "object", "additionalProperties": False, "required": ["cut_pct"], "properties": {
     "category": {"type": ["string", "null"], "enum": CATEGORIES + [None]}, "merchant": STR("merchant key, if cutting one merchant"),
     "cut_pct": {"type": "number", "description": "percent reduction, 0-100"}}}
 
 
+def _optional(spec):
+    t = spec.get("type")
+    return isinstance(t, list) and "null" in t
+
+
 def _tool(name, description, props):
+    """Nullable parameters are optional: Groq validates tool calls and rejects ones missing a 'required' field."""
     return {"type": "function", "function": {"name": name, "description": description,
-            "parameters": {"type": "object", "additionalProperties": False, "required": list(props), "properties": props}}}
+            "parameters": {"type": "object", "additionalProperties": False,
+                           "required": [k for k, v in props.items() if not _optional(v)], "properties": props}}}
 
 
 TOOLS = [
@@ -153,24 +160,33 @@ def stream_chat(session, user_text, client=None):
     msgs.append({"role": "user", "content": user_text})
     answer, results = "", []
     try:
+        bad_calls = 0
         for _ in range(MAX_TURNS):
             text, calls, finish, usage = "", {}, None, None
-            for chunk in _create(client, groq, messages=[{"role": "system", "content": SYSTEM}] + _recent(msgs)):
-                usage = getattr(getattr(chunk, "x_groq", None), "usage", None) or getattr(chunk, "usage", None) or usage
-                if not chunk.choices:
+            try:
+                for chunk in _create(client, groq, messages=[{"role": "system", "content": SYSTEM}] + _recent(msgs)):
+                    usage = getattr(getattr(chunk, "x_groq", None), "usage", None) or getattr(chunk, "usage", None) or usage
+                    if not chunk.choices:
+                        continue
+                    ch = chunk.choices[0]
+                    finish = ch.finish_reason or finish
+                    if ch.delta.content:
+                        text += ch.delta.content
+                        answer += ch.delta.content
+                        yield "text", ch.delta.content
+                    for tc in ch.delta.tool_calls or []:
+                        c = calls.setdefault(tc.index, {"id": "", "name": "", "arguments": ""})
+                        c["id"] = tc.id or c["id"]
+                        if tc.function:
+                            c["name"] += tc.function.name or ""
+                            c["arguments"] += tc.function.arguments or ""
+            except getattr(groq, "APIError", Exception) as e:
+                # a malformed tool call fails validation before any text is shown: ask the model again
+                if "validation failed" in str(e) and not text and bad_calls < 2:
+                    bad_calls += 1
+                    print("retrying round after tool-call validation error")
                     continue
-                ch = chunk.choices[0]
-                finish = ch.finish_reason or finish
-                if ch.delta.content:
-                    text += ch.delta.content
-                    answer += ch.delta.content
-                    yield "text", ch.delta.content
-                for tc in ch.delta.tool_calls or []:
-                    c = calls.setdefault(tc.index, {"id": "", "name": "", "arguments": ""})
-                    c["id"] = tc.id or c["id"]
-                    if tc.function:
-                        c["name"] += tc.function.name or ""
-                        c["arguments"] += tc.function.arguments or ""
+                raise
             if usage:
                 yield "usage", {"input_tokens": getattr(usage, "prompt_tokens", 0), "output_tokens": getattr(usage, "completion_tokens", 0)}
             msgs.append({"role": "assistant", "content": text or None, **({"tool_calls": [
