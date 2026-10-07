@@ -28,11 +28,13 @@ cp .env.example .env          # add GROQ_API_KEY (free at console.groq.com) for 
 ```
 Without a key, everything except the chat and the AI-written captions still works (the story uses built-in captions).
 
-Deploy (Render / Railway): start command `uvicorn app.main:app --host 0.0.0.0 --port $PORT`, env var `GROQ_API_KEY`.
+Works on Python 3.9+ (tested on 3.9.6 and 3.12).
+
+**Deploy:** on Render, *New → Blueprint* → pick this repo; `render.yaml` sets everything up and asks for `GROQ_API_KEY`. Elsewhere: start command `uvicorn app.main:app --host 0.0.0.0 --port $PORT`. Groq's free tier allows 8k tokens a minute and 200k a day per model; use a Dev-tier key for a public demo.
 
 ## Checks
 ```bash
-.venv/bin/python tests/test_core.py     # 20 offline checks: parsing, categories, analytics, story, grounding, chat loop
+.venv/bin/python tests/test_core.py     # 17 offline checks: parsing, categories, analytics, story, grounding, chat loop
 .venv/bin/python eval/run_eval.py       # 25 live questions against the model; writes eval/results.md (needs the key)
 .venv/bin/python scripts/make_sample.py # regenerate data/samples (seeded)
 ```

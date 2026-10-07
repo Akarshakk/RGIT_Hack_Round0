@@ -1,0 +1,14 @@
+# One-click deploy on Render: New > Blueprint > pick this repo, then paste GROQ_API_KEY when asked.
+services:
+  - type: web
+    name: credence
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /status
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: GROQ_API_KEY
+        sync: false

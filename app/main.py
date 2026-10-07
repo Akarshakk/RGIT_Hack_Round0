@@ -3,6 +3,7 @@ import json
 import os
 import secrets
 import time
+from typing import Optional
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -59,7 +60,7 @@ def _ingest(resp, data, name, password, mapping):
 
 
 @app.get("/status")
-def status(sid: str | None = Cookie(None)):
+def status(sid: Optional[str] = Cookie(None)):
     live = sid in SESSIONS and time.time() - SESSIONS[sid]["ts"] <= TTL
     return dict(chat_enabled=bool(os.environ.get("GROQ_API_KEY")), categories=CATEGORIES, has_session=live)
 
@@ -79,7 +80,7 @@ def sample(response: Response, kind: str = "csv"):
 
 
 @app.get("/overview")
-def overview(period: str | None = None, sid: str | None = Cookie(None)):
+def overview(period: Optional[str] = None, sid: Optional[str] = Cookie(None)):
     df = _session(sid)["df"]
     return dict(overview=an.get_overview(df, period), categories=an.category_breakdown(df, period),
                 buckets=_buckets(df, period), trend=an.monthly_trend(df), trend_buckets=_trend_buckets(df),
@@ -99,19 +100,19 @@ def _buckets(df, period):
 
 
 @app.get("/insights")
-def insights(sid: str | None = Cookie(None)):
+def insights(sid: Optional[str] = Cookie(None)):
     return an.generate_insights(_session(sid)["df"])
 
 
 @app.get("/transactions")
-def transactions(limit: int = 200, sid: str | None = Cookie(None)):
+def transactions(limit: int = 200, sid: Optional[str] = Cookie(None)):
     df = _session(sid)["df"].tail(limit).iloc[::-1]
     return [dict(id=int(i), date=str(r.date.date()), narration=r.narration, merchant=r.merchant, amount=round(float(r.amount)),
                  category=r.category, cat_source=r.cat_source) for i, r in df.iterrows()]
 
 
 @app.post("/recategorize")
-def recat(merchant: str = Body(...), category: str = Body(...), sid: str | None = Cookie(None)):
+def recat(merchant: str = Body(...), category: str = Body(...), sid: Optional[str] = Cookie(None)):
     s = _session(sid)
     if category not in BUCKET:
         raise HTTPException(400, "Unknown category")
@@ -120,29 +121,29 @@ def recat(merchant: str = Body(...), category: str = Body(...), sid: str | None 
 
 
 @app.post("/simulate")
-def simulate(changes: list[dict] = Body(..., embed=True), sid: str | None = Cookie(None)):
+def simulate(changes: list[dict] = Body(..., embed=True), sid: Optional[str] = Cookie(None)):
     return an.simulate_savings(_session(sid)["df"], changes)
 
 
 @app.get("/future")
-def future(monthly: float | None = None, years: int = 10, rate_pct: float = 10.0, sid: str | None = Cookie(None)):
+def future(monthly: Optional[float] = None, years: int = 10, rate_pct: float = 10.0, sid: Optional[str] = Cookie(None)):
     return an.future_you(_session(sid)["df"], monthly, years, max(0.0, min(rate_pct, 20.0)))
 
 
 @app.post("/goal")
-def goal(target: float = Body(..., embed=True), months: int = Body(..., embed=True), sid: str | None = Cookie(None)):
+def goal(target: float = Body(..., embed=True), months: int = Body(..., embed=True), sid: Optional[str] = Cookie(None)):
     return an.plan_goal(_session(sid)["df"], target, max(1, months))
 
 
 @app.get("/wrapped")
-def wrapped(sid: str | None = Cookie(None)):
+def wrapped(sid: Optional[str] = Cookie(None)):
     s = _session(sid)
     s["story"] = wr.build(s["df"])
     return s["story"]
 
 
 @app.post("/wrapped/ai")
-def wrapped_ai(sid: str | None = Cookie(None)):
+def wrapped_ai(sid: Optional[str] = Cookie(None)):
     """LLM-written quips for the story; each one is dropped unless every number in it is already on its card."""
     s = _session(sid)
     story = s.get("story") or wr.build(s["df"])
@@ -150,7 +151,7 @@ def wrapped_ai(sid: str | None = Cookie(None)):
 
 
 @app.post("/chat")
-def chat(message: str = Body(..., embed=True), sid: str | None = Cookie(None)):
+def chat(message: str = Body(..., embed=True), sid: Optional[str] = Cookie(None)):
     s = _session(sid)
 
     def gen():
@@ -161,7 +162,7 @@ def chat(message: str = Body(..., embed=True), sid: str | None = Cookie(None)):
 
 
 @app.delete("/session")
-def delete(response: Response, sid: str | None = Cookie(None)):
+def delete(response: Response, sid: Optional[str] = Cookie(None)):
     SESSIONS.pop(sid, None)
     response.delete_cookie("sid")
     return dict(deleted=True)
