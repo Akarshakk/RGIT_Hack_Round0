@@ -146,25 +146,24 @@ def build(df):
                            theme="saffron"))
 
     # 8. outro: non-overlapping wins
-    wins = []
-    if "weekend_effect" in insights:
-        wins.append(("Cut weekend food orders by 30%", insights["weekend_effect"]["monthly_saving_estimate"]))
-    elif "small_spend_leak" in insights:
-        wins.append(("Skip one in four small food orders", insights["small_spend_leak"]["monthly_saving_estimate"]))
-    unused = [s for s in subs if s["possibly_unused"]]
-    if unused:
-        wins.append((f"Drop {unused[0]['merchant'].title()} if you've stopped going", unused[0]["monthly_cost"]))
-    if "avoidable_fees" in insights:
-        wins.append(("Pay bills on time, no late fees", insights["avoidable_fees"]["monthly_saving_estimate"]))
-    if "category_spike" in insights and len(wins) < 3:
-        wins.append((f"Bring {insights['category_spike']['evidence']['category']} back to normal", insights["category_spike"]["monthly_saving_estimate"]))
-    wins = [(t, R(v)) for t, v in wins if v > 0]
-    total = sum(v for _, v in wins)
-    cards.append(_card("outro", "Here's what you can win back", inr(total), f"a month, from {len(wins)} small habit{'s' if len(wins) != 1 else ''}.",
+    qw = an.quick_wins(df)
+    wins, total = [(w["action"], w["monthly_saving"]) for w in qw["wins"]], qw["monthly_total"]
+    cards.append(_card("outro", "Here's what you can win back", inr(total), f"a month, from {pl(len(wins), 'small habit')}.",
                        {"roast": "Small changes. Your future self is begging.",
                         "hype": "No big sacrifices. Just a few habits, and you keep everything you love."},
                        viz={"type": "wins", "items": [{"t": t, "v": v} for t, v in wins], "year": total * 12,
                             "hours": R(total / hourly) if hourly else None}, theme="ink"))
+
+    # 9. future you: the same monthly amount, compounded at an illustrative rate
+    if total:
+        fy = an.future_you(df, total, years=10)
+        cards.append(_card("future", f"Future you · {fy['by_year']}", inr(fy["final_value"]),
+                           f"If those {inr(total)} a month went into savings for 10 years, at an illustrative {fy['illustrative_rate_pct']:g}% a year.",
+                           {"roast": "Future you is watching. Future you wants the Zomato money.",
+                            "hype": "That's future you's head start, built from habits, not sacrifice."},
+                           receipt="illustrative rate, not a forecast or investment advice",
+                           viz={"type": "future", "series": fy["series"], "contributed": fy["contributed"], "growth": fy["growth"]},
+                           theme="mint"))
 
     return dict(period=_period_label(df), hourly=R(hourly), cards=cards)
 
@@ -220,17 +219,22 @@ def _ceiling(v):
 # ---------- optional LLM rewrite of the quips ----------
 QUIP_SYSTEM = """You write one-line captions for a Spotify-Wrapped-style story about someone's bank statement, for young Indians.
 For each card you get its facts. Write two captions per card:
-- "roast": witty, teasing, a little savage but never cruel, about money habits only (never looks, body, gender, caste, religion).
-- "hype": warm, encouraging, still specific.
-Rules: max 18 words each. You may use light Hinglish. Use ONLY numbers that appear in that card's facts, copied exactly; when unsure, use no numbers.
-Never recommend specific stocks, funds or investment products.
+- "roast": witty and teasing, like a friend roasting you. About money habits only (never looks, body, gender, caste, religion).
+- "hype": warm and encouraging, still specific to the card.
+Rules:
+- Max 14 words each. Light Hinglish is welcome (yaar, bas, kya scene hai).
+- Don't restate the card's facts; the card already shows them. Add the joke or the encouragement.
+- Prefer no numbers. If you use one, copy it exactly from that card's facts.
+- Stay true to the facts: never say they overspent, earned less, or did something the facts don't show.
+- Never recommend specific stocks, funds or investment products.
 Return JSON: {"cards": {"<card id>": {"roast": "...", "hype": "..."}}}"""
 
-_NUM = re.compile(r"\d[\d,]*(?:\.\d+)?")
+_NUM = re.compile(r"\d[\d,]*(?:\.\d+)?(?:\s*(?:k|K|L|lakh|lac|cr|crore)\b)?")
 
 
 def _nums(s):
-    return {x.replace(",", "") for x in _NUM.findall(s)}
+    """Numbers as written; shorthand like '3k' or '1.2 lakh' stays distinct so it can't pass as an exact figure."""
+    return {re.sub(r"[,\s]", "", x) for x in _NUM.findall(s)}
 
 
 def ai_quips(story, client=None):
@@ -243,7 +247,7 @@ def ai_quips(story, client=None):
     payload = {c["id"]: {"headline": c["big"], "detail": c["sub"], "eyebrow": c["eyebrow"]} for c in story["cards"]}
     try:
         r = client.chat.completions.create(
-            model=os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b"), temperature=0.9, max_tokens=2500,
+            model=os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b"), temperature=0.9, max_tokens=6000, reasoning_effort="low",
             response_format={"type": "json_object"},
             messages=[{"role": "system", "content": QUIP_SYSTEM}, {"role": "user", "content": json.dumps(payload, ensure_ascii=False)}])
         out = json.loads(r.choices[0].message.content).get("cards", {})

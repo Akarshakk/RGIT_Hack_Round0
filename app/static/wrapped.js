@@ -6,7 +6,7 @@ window.Wrapped = (() => {
   const inr = (n) => "₹" + Math.round(n).toLocaleString("en-IN");
   const $ = (id) => document.getElementById(id);
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const LIGHT = new Set(["turmeric", "cream", "saffron", "sky"]);
+  const LIGHT = new Set(["turmeric", "cream", "saffron", "sky", "mint"]);
 
   let cards = [], els = [], idx = 0, mode = "roast", start = 0, elapsed = 0, paused = false, raf = null, onClose = null, ai = {};
 
@@ -43,6 +43,15 @@ window.Wrapped = (() => {
     subs: (v) => `<div class="v-subs">${v.items.map((s) => `<div class="${s.flag ? "flag" : ""}"><span>${esc(s.m)}</span><span>${inr(s.v)}/mo</span></div>`).join("")}<div class="tot"><span>total</span><span>${inr(v.total)}/mo</span></div></div>`,
     friends: (v) => `<div class="v-friends">${v.items.map((f) => `<div class="f"><div class="av">${esc(f.m[0])}</div><div class="n">${esc(f.m)}<small>${f.n} payments</small></div><div class="a">${inr(f.v)}</div></div>`).join("")}
       <div class="ledger"><span>received back</span><span class="zero">${inr(v.back)}</span></div></div>`,
+    future: (v) => {
+      const pts = [{ year: 0, value: 0, contributed: 0 }, ...v.series], max = pts[pts.length - 1].value, n = pts.length - 1;
+      const xy = (k) => pts.map((p, i) => `${(i / n * 100).toFixed(2)},${(48 - p[k] / max * 44).toFixed(2)}`).join(" ");
+      return `<svg class="v-future" viewBox="0 0 100 50" preserveAspectRatio="none" aria-hidden="true">
+          <polygon points="0,48 ${xy("value")} 100,48" fill="var(--ink)" opacity=".9"/>
+          <polygon points="0,48 ${xy("contributed")} 100,48" fill="var(--turmeric)"/>
+        </svg>
+        <div class="v-legend"><span style="--c:var(--turmeric)">you put in ${inr(v.contributed)}</span><span style="--c:var(--ink)">growth ${inr(v.growth)}</span></div>`;
+    },
     wins: (v) => `<div class="v-wins">${v.items.map((w) => `<div><span>${esc(w.t)}</span><b>${inr(w.v)}</b></div>`).join("")}</div>
       <div class="v-year"><small>that's a year of</small><b>${inr(v.year)}</b>${v.hours ? `<span>or ${v.hours} hours of work, every month</span>` : ""}</div>`,
   };
@@ -55,7 +64,7 @@ window.Wrapped = (() => {
   }
 
   function render(c, i) {
-    const intro = c.id === "intro", outro = c.id === "outro";
+    const intro = c.id === "intro", last = i === cards.length - 1;
     const big = intro ? `<div class="c-intro-mark">${esc(c.big.replace(/ /g, "\n"))}</div>` : `<div class="c-big ${bigClass(c)}">${esc(c.big)}</div>`;
     return `<section class="card th-${c.theme}" data-i="${i}" hidden aria-label="Card ${i + 1} of ${cards.length}">
       <div class="c-eyebrow">${esc(c.eyebrow)}</div>
@@ -64,9 +73,9 @@ window.Wrapped = (() => {
       ${c.viz && viz[c.viz.type] ? `<div class="c-viz">${viz[c.viz.type](c.viz)}</div>` : ""}
       <div class="c-spacer"></div>
       <div class="quip"><span class="tag"></span><div class="qt"></div></div>
-      ${c.receipt ? `<div class="c-receipt">${esc(c.receipt)}</div>` : ""}
+      ${c.receipt ? `<div class="c-receipt${c.id === "future" ? " plain" : ""}">${esc(c.receipt)}</div>` : ""}
       ${intro ? `<div class="c-hint">tap to start →</div>` : ""}
-      ${outro ? `<div class="ctas"><button type="button" class="cta" data-act="replay">Replay</button><button type="button" class="cta primary" data-act="done">Open dashboard</button></div>` : ""}
+      ${last ? `<div class="ctas"><button type="button" class="cta" data-act="share">Share card</button><button type="button" class="cta primary" data-act="done">Open dashboard</button></div>` : ""}
     </section>`;
   }
 
@@ -144,13 +153,14 @@ window.Wrapped = (() => {
     $("cards").addEventListener("click", (e) => {
       const act = e.target.dataset?.act;
       if (act === "replay") { e.stopPropagation(); go(0); }
+      if (act === "share") { e.stopPropagation(); shareCard(); }
       if (act === "done") { e.stopPropagation(); close(); }
     });
   }
 
-  function open(story, opts = {}) {
+  function open(st, opts = {}) {
     wire();
-    cards = story.cards; onClose = opts.onClose; ai = opts.ai || ai;
+    cards = st.cards; story = st; onClose = opts.onClose; ai = opts.ai || ai;
     $("bars").innerHTML = cards.map(() => '<div class="bar"><i></i></div>').join("");
     $("cards").innerHTML = cards.map(render).join("");
     els = [...$("cards").children];
@@ -161,7 +171,50 @@ window.Wrapped = (() => {
     go(0);
   }
 
+  // 1080x1920 PNG summary for Instagram stories / WhatsApp status. Drawn on canvas from the same story data.
+  let story = null;
+  async function shareCard(st = story) {
+    if (!st) return;
+    await document.fonts.ready;
+    const W = 1080, H = 1920, cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+    const g = cv.getContext("2d"), by = (id) => st.cards.find((c) => c.id === id);
+    g.fillStyle = "#0e2522"; g.fillRect(0, 0, W, H);
+    // logo ring
+    const segs = ["#F5B700", "#E5352B", "#D81B7A", "#3FA0FF"];
+    g.lineWidth = 26;
+    segs.forEach((c, i) => { const a0 = (42 + i * 71.25) * Math.PI / 180; g.strokeStyle = c; g.beginPath(); g.arc(150, 170, 58, a0, a0 + 62.25 * Math.PI / 180); g.stroke(); });
+    g.fillStyle = "#9BE3C3"; g.beginPath(); g.arc(201, 170, 13, 0, Math.PI * 2); g.fill();
+    g.fillStyle = "#fff4e0"; g.font = "800 64px Unbounded"; g.fillText("credence", 250, 194);
+    g.font = "600 34px Unbounded"; g.fillStyle = "#a3b8b2"; g.fillText(("MY MONEY, WRAPPED · " + st.period).toUpperCase(), 90, 330);
+    const persona = by("persona");
+    g.fillStyle = "#F5B700"; g.font = "900 112px Unbounded";
+    wrap(g, persona ? persona.big : "Paisa kahan gaya?", 90, 470, 900, 118);
+    const rows = [["Top app", by("top") && `${by("top").big} · ${by("top").sub.split(" and ")[0]}`],
+      ["Food delivery", by("hours") && `${by("hours").big} of my work`],
+      ["Plot twist", by("peak") && by("peak").big.replace(".", "")],
+      ["Can win back", by("outro") && `${by("outro").big} a month`],
+      ["Future me", by("future") && `${by("future").big} by ${by("future").eyebrow.split("· ")[1]}`]].filter((r) => r[1]);
+    let y = 860;
+    const colors = ["#E5352B", "#7cc4ff", "#fff4e0", "#9BE3C3", "#F5B700"];
+    rows.forEach(([k, v], i) => {
+      g.fillStyle = "rgba(255,244,224,.08)"; roundRect(g, 90, y - 70, 900, 150, 36); g.fill();
+      g.fillStyle = colors[i]; g.beginPath(); g.arc(150, y + 5, 16, 0, Math.PI * 2); g.fill();
+      g.fillStyle = "#a3b8b2"; g.font = "500 34px Mukta"; g.fillText(k, 196, y - 8);
+      g.fillStyle = "#fff4e0"; g.font = "800 46px Unbounded"; g.fillText(fit(g, v, 760), 196, y + 50);
+      y += 180;
+    });
+    g.fillStyle = "#a3b8b2"; g.font = "500 32px Mukta"; g.fillText("Made with Credence · your bank statement, told like a story", 90, H - 110);
+    cv.toBlob((b) => { const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = "my-credence-wrapped.png"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); });
+  }
+  function wrap(g, text, x, y, maxW, lh) {
+    let line = "";
+    for (const w of text.split(" ")) { const t = line ? line + " " + w : w; if (g.measureText(t).width > maxW && line) { g.fillText(line, x, y); y += lh; line = w; } else line = t; }
+    g.fillText(line, x, y);
+  }
+  function fit(g, t, maxW) { while (g.measureText(t).width > maxW && t.length > 4) t = t.slice(0, -2) + "…"; return t; }
+  function roundRect(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+
   function setAI(quips) { ai = quips || {}; if (els.length) paintQuips(); }
 
-  return { open, setAI, LOGO };
+  return { open, setAI, shareCard, LOGO };
 })();

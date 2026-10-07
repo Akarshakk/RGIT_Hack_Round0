@@ -127,11 +127,12 @@ function showDashboard() {
   $("periodLabel").textContent = story?.period || "";
   const main = document.querySelector(".dash-main");
   main.classList.remove("reveal"); void main.offsetWidth; main.classList.add("reveal");
-  requestAnimationFrame(() => { drawDonut(true); drawMonths(true); });
+  requestAnimationFrame(() => { drawDonut(true); drawMonths(true); drawFuture(); });
   window.scrollTo({ top: 0 });
 }
 
 $("replayBtn").onclick = () => Wrapped.open(story, { ai: aiQuips, onClose: showDashboard });
+$("shareBtn").onclick = () => Wrapped.shareCard(story);
 $("delBtn").onclick = async () => { await fetch("/session", { method: "DELETE" }); location.href = "/"; };
 
 // ================= dashboard =================
@@ -154,6 +155,9 @@ async function renderDashboard() {
   if (!$("app").hidden) { drawDonut(false); drawMonths(false); }
   renderRule();
   renderTips();
+  renderFriends();
+  if (!$("fyMonthly").dataset.touched) $("fyMonthly").value = data.quick_wins.monthly_total || 2000;
+  drawFuture();
   renderWhatIf();
   renderTx();
 }
@@ -281,7 +285,59 @@ function drawMonths(animate) {
   });
 }
 let rz;
-window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => data && !$("app").hidden && drawMonths(false), 150); });
+window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => data && !$("app").hidden && (drawMonths(false), drawFuture()), 150); });
+
+// ---------- future you ----------
+let fyRate = 10, fyTimer;
+$("fyRate").querySelectorAll("button").forEach((b) => (b.onclick = () => {
+  fyRate = +b.dataset.r;
+  $("fyRate").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+  drawFuture();
+}));
+$("fyYears").oninput = () => { $("fyYearsOut").textContent = `${$("fyYears").value} year${$("fyYears").value === "1" ? "" : "s"}`; clearTimeout(fyTimer); fyTimer = setTimeout(drawFuture, 120); };
+$("fyMonthly").oninput = () => { $("fyMonthly").dataset.touched = 1; clearTimeout(fyTimer); fyTimer = setTimeout(drawFuture, 250); };
+async function drawFuture() {
+  if (!data || $("app").hidden) return;
+  const r = $("fyYears"); r.style.setProperty("--v", ((r.value - 1) / 29 * 100) + "%");
+  const f = await (await fetch(`/future?monthly=${+$("fyMonthly").value || 0}&years=${r.value}&rate_pct=${fyRate}`)).json();
+  $("fyLine").innerHTML = `<b>${inr(f.final_value)}</b>by ${f.by_year}. You'd put in ${inr(f.contributed)}; compounding at ${f.illustrative_rate_pct}% adds ${inr(f.growth)}.`;
+  const svg = $("fyChart"), W = svg.clientWidth || 500, H = 220, pad = 24;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const pts = [{ year: 0, value: 0, contributed: 0 }, ...f.series], max = Math.max(1, pts[pts.length - 1].value), n = pts.length - 1;
+  const X = (i) => (i / n) * (W - 8) + 4, Y = (v) => H - pad - (v / max) * (H - pad - 12);
+  const line = (k) => pts.map((p, i) => `${X(i).toFixed(1)},${Y(p[k]).toFixed(1)}`).join(" ");
+  const ticks = [...new Set([0, Math.round(n / 2), n])];
+  svg.innerHTML = `<defs><linearGradient id="fyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9be3c3" stop-opacity=".55"/><stop offset="1" stop-color="#9be3c3" stop-opacity="0"/></linearGradient></defs>
+    <polygon points="${X(0)},${Y(0)} ${line("value")} ${X(n)},${Y(0)}" fill="url(#fyG)"/>
+    <polygon points="${X(0)},${Y(0)} ${line("contributed")} ${X(n)},${Y(0)}" fill="rgba(245,183,0,.28)"/>
+    <polyline points="${line("value")}" fill="none" stroke="#9be3c3" stroke-width="3" stroke-linejoin="round"/>
+    <polyline points="${line("contributed")}" fill="none" stroke="#f5b700" stroke-width="2" stroke-dasharray="5 4"/>
+    <line x1="0" x2="${W}" y1="${Y(0)}" y2="${Y(0)}" stroke="rgba(255,244,224,.18)"/>
+    ${ticks.map((i) => `<text x="${X(i)}" y="${H - 6}" text-anchor="${i === 0 ? "start" : i === n ? "end" : "middle"}">${i === 0 ? "now" : `year ${i}`}</text>`).join("")}
+    <circle cx="${X(n)}" cy="${Y(pts[n].value)}" r="6" fill="#9be3c3" stroke="#0e2522" stroke-width="3"/>
+    <rect id="fyHit" x="0" y="0" width="${W}" height="${H}" fill="transparent"/>`;
+  const tip = $("fyTip");
+  svg.querySelector("#fyHit").onmousemove = (e) => {
+    const box = svg.getBoundingClientRect(), i = Math.max(1, Math.min(n, Math.round((e.clientX - box.left) / box.width * n)));
+    const p = pts[i];
+    tip.innerHTML = `<b>Year ${i}</b><div><span><i style="--c:#9be3c3"></i>Worth</span><span>${inr(p.value)}</span></div><div><span><i style="--c:#f5b700"></i>You put in</span><span>${inr(p.contributed)}</span></div>`;
+    tip.style.left = Math.min(Math.max(X(i) / W * box.width, 100), box.width - 100) + "px";
+    tip.style.top = (Y(p.value) / H * box.height) + "px";
+    tip.hidden = false;
+  };
+  svg.querySelector("#fyHit").onmouseleave = () => (tip.hidden = true);
+}
+
+// ---------- friend ledger ----------
+function renderFriends() {
+  const f = data.friends;
+  if (!f.people.length) { $("friends").innerHTML = `<p class="hint">No money sent to or from people in this statement.</p>`; return; }
+  $("friends").innerHTML = f.people.map((p) => `
+    <div class="fr"><div class="av">${esc(p.name[0])}</div>
+      <div class="nm"><b>${esc(p.name)}</b><small>${p.payments} payment${p.payments === 1 ? "" : "s"}</small></div>
+      <div class="bal ${p.net < 0 ? "neg" : "pos"}">${p.net < 0 ? `you sent ${inr(p.sent)}` : `you got ${inr(p.received)}`}<small>${p.received ? `got back ${inr(p.received)}` : "got back ₹0"}</small></div></div>`).join("") +
+    `<div class="fr-total"><span>Sent <b>${inr(f.sent)}</b></span><span>Received <b>${inr(f.received)}</b></span></div>`;
+}
 
 // ---------- 50/30/20 ----------
 function renderRule() {
@@ -362,10 +418,28 @@ async function renderTx() {
 }
 
 // ================= chat =================
-const SUGG = ["Where did most of my money go?", "Which subscriptions am I paying for?", "How can I save ₹5,000 a month?", "Mera food ka kharcha kitna hai?", "Which mutual fund should I buy?"];
+const SUGG = ["Where did most of my money go?", "How can I save ₹5,000 a month?", "Mera food ka kharcha kitna hai?", "What could I have in 10 years?", "Which mutual fund should I buy?"];
 $("sugg").innerHTML = SUGG.map((s) => `<button type="button">${esc(s)}</button>`).join("");
 $("sugg").querySelectorAll("button").forEach((b) => (b.onclick = () => ask(b.textContent)));
 $("askForm").onsubmit = (e) => { e.preventDefault(); ask($("q").value); };
+
+// voice: the browser's own speech recognition (Chrome, Edge, Safari). en-IN copes with Hinglish; no audio leaves via our server.
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (SR) {
+  const mic = $("micBtn");
+  mic.hidden = false;
+  let rec = null;
+  mic.onclick = () => {
+    if (rec) return rec.stop();
+    rec = new SR();
+    rec.lang = "en-IN"; rec.interimResults = true;
+    mic.classList.add("live");
+    rec.onresult = (e) => { $("q").value = [...e.results].map((r) => r[0].transcript).join(" "); if (e.results[e.results.length - 1].isFinal) { rec.stop(); ask($("q").value); } };
+    rec.onend = () => { mic.classList.remove("live"); rec = null; };
+    rec.onerror = () => { mic.classList.remove("live"); rec = null; };
+    rec.start();
+  };
+}
 
 function setChatStatus(on) {
   $("chatStatus").textContent = on ? "Numbers come from your statement, never guessed" : "AI chat is off: add GROQ_API_KEY to .env and restart";
@@ -430,6 +504,15 @@ async function ask(text) {
         const d = JSON.parse(raw);
         if (ev === "text") { acc += d; paint(); }
         else if (ev === "notice") { notes += (notes ? " " : "") + d; paint(); }
+        else if (ev === "grounding" && d.total) {
+          const b = document.createElement("div");
+          const ok = !d.unverified.length;
+          b.className = "ground " + (ok ? "ok" : "warn");
+          b.textContent = ok ? `✓ ${d.verified}/${d.total} numbers verified against your statement` : `⚠ ${d.verified}/${d.total} verified · not from your data: ${d.unverified.join(", ")}`;
+          b.title = "Every ₹ amount and % in this answer was checked against the tool results (receipts) for this turn.";
+          chips.after(b);
+          $("msgs").scrollTop = 1e9;
+        }
         else if (ev === "receipt") {
           const c = document.createElement("button");
           c.type = "button"; c.className = "receipt"; c.textContent = "🧾 " + d.tool.replace(/_/g, " ");

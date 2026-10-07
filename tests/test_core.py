@@ -147,7 +147,8 @@ def test_chat_loop_runs_tools_and_streams():
     session = {"df": _df(), "history": []}
     events = list(stream_chat(session, "How can I save?", client=_Fake()))
     kinds = [e for e, _ in events]
-    assert kinds == ["receipt", "text", "text", "done"], kinds
+    assert kinds == ["receipt", "text", "text", "grounding", "done"], kinds
+    assert events[3][1] == {"verified": 0, "total": 0, "unverified": []}
     assert events[0][1]["tool"] == "generate_insights" and events[0][1]["result"]
     h = session["history"]
     assert [m["role"] for m in h] == ["user", "assistant", "tool", "assistant"]
@@ -164,7 +165,7 @@ def test_all_tool_outputs_json_serializable():
     from app.chat import run_tool
     df = redact(_df())
     args = dict(period=None, bucket=None, category=None, n=5, query=None, min_amount=None, limit=5, changes=[
-        {"category": "Food & Dining", "merchant": None, "cut_pct": 10}], months=12, target=90000)
+        {"category": "Food & Dining", "merchant": None, "cut_pct": 10}], months=12, target=90000, monthly=None, years=10, rate_pct=None)
     for t in TOOLS:
         json.dumps(run_tool(df, t["function"]["name"], {k: args[k] for k in t["function"]["parameters"]["properties"]}))
 
@@ -173,7 +174,8 @@ def test_wrapped_story_matches_ground_truth():
     from app import wrapped as wr
     st = wr.build(_df())
     cards = {c["id"]: c for c in st["cards"]}
-    assert list(cards) == ["intro", "picture", "top", "hours", "persona", "peak", "subs", "friends", "outro"]
+    assert list(cards) == ["intro", "picture", "top", "hours", "persona", "peak", "subs", "friends", "outro", "future"]
+    assert cards["future"]["big"] == "₹6,95,244"  # 3,394/month for 10 years at an illustrative 10%
     assert cards["top"]["big"] == "Zomato" and "33 payments" in cards["top"]["sub"]
     assert cards["persona"]["big"] == "The Weekend Foodie"
     assert cards["peak"]["big"] == "August." and "₹18,999" in cards["peak"]["sub"]
@@ -201,6 +203,21 @@ def test_icici_style_headers():
                 '2,02/08/2026,02/08/2026,,UPI-zomato@icici-ZOMATO-Order,"420.00",,"1,01,580.00"\n')
     df = load_statement(csv_text.encode(), "icici.csv")
     assert list(df.amount) == [82000.0, -420.0] and df.balance.iloc[-1] == 101580.0
+
+
+def test_grounding_flags_invented_numbers():
+    from app.grounding import check
+    r = check("Rent is ₹18,000 (37%). Together that's roughly 64%, so save ₹5,000.", [{"amount": 18000, "pct": 37.2}], "How do I save ₹5,000?")
+    assert r == {"verified": 3, "total": 4, "unverified": ["64%"]}
+
+
+def test_future_you_and_friend_ledger():
+    df = _df()
+    f = an.future_you(df, 1000, years=1, rate_pct=0)
+    assert f["final_value"] == f["contributed"] == 12000 and f["by_year"] == 2027
+    fl = an.friend_ledger(df)
+    assert fl["sent"] == TRUTH["spend_by_category"]["Transfers"] and fl["received"] == 0 and fl["people"][0]["name"] == "priya.n"
+    assert an.quick_wins(df)["monthly_total"] == 3394
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ import os
 import re
 
 from app import analytics as an
+from app import grounding
 from app.categorize import CATEGORIES
 
 MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
@@ -11,15 +12,24 @@ MAX_TURNS = 8
 
 SYSTEM = """You are Credence, a friendly Indian personal-finance coach. You help the user understand their own bank statement and save money.
 
-Rules:
-- Reply in the user's language: English, or Hinglish if they write in Hinglish.
-- Every number you state must come from a tool result in this conversation. Never estimate, add up or compute totals yourself. If you need a number, call a tool. If the data cannot answer the question, say so.
-- Never add, subtract or compute percentages yourself, including totals of tips: quote the tool's figures one by one. Use the whole statement (period null) unless the user names a month.
+Language:
+- Mirror the user. If they write Hindi or Hinglish (words like kitna, kya, mera, kharcha, paisa, bata, hai), reply in Hinglish written in Roman script. Otherwise reply in English.
+
+Numbers (most important):
+- Every number you state must be copied from a tool result in this conversation, or from the user's own message. Call a tool whenever you need a number. If the data cannot answer, say so.
+- Never work numbers out yourself: no adding categories or tips together, no shares or percentages unless a tool returned that exact `pct`, no "≈", "about" or "roughly" figures. Each answer is automatically checked and any number not found in a tool result is flagged to the user.
+- Use the whole statement (period null) unless the user names a month or says "last month".
 - Write money in rupees with Indian digit grouping, e.g. ₹1,23,456.
-- Give tips as specific actions with the expected monthly saving, taken from `monthly_saving_estimate` or `simulate_savings`.
-- Do not recommend specific stocks, mutual funds or other securities. For investment-product questions, explain only the general principle in words (emergency fund first, diversification, low costs), give no allocation percentages or fund names, and suggest a SEBI-registered investment adviser.
+
+Advice:
+- Give tips as specific actions with the expected monthly saving, taken from `monthly_saving_estimate`, `quick_wins` or `simulate_savings`.
+- For "future me / long term / what will this become" questions, use `future_you` and say its rate is illustrative, not a promise.
 - Merchant and person names in tool results are already masked; use them as given.
-- Keep answers short: a direct answer first, then at most three supporting points."""
+
+Investments (regulatory, non-negotiable):
+- You are not a SEBI-registered investment adviser. If asked which stock, mutual fund, fund type, SIP, ETF, crypto or other security to buy, or how to allocate money between them: say in one or two sentences that you can't recommend investments, suggest a SEBI-registered investment adviser, and offer budgeting help instead (for example how much they could free up each month, via `quick_wins`). Do not name fund categories, returns, benchmarks or allocation percentages.
+
+Style: a direct answer first, then at most three short bullets. Prefer bullets over tables. Keep it under 120 words."""
 
 PERIOD = {"type": ["string", "null"], "description": "'last_month', a month like '2026-08', or null for all data"}
 STR = lambda d: {"type": ["string", "null"], "description": d}
@@ -48,11 +58,17 @@ TOOLS = [
     _tool("generate_insights", "Personalised saving insights, each with a monthly saving estimate. Use for any 'how can I save' question.", {}),
     _tool("plan_goal", "Savings goal planner: monthly saving needed for a target amount in N months vs the current surplus, and which tips close the gap.",
           {"target": {"type": "number"}, "months": {"type": "integer"}}),
+    _tool("future_you", "Illustrative long-term value of a monthly saving (defaults to the user's quick wins), compounded at an assumed annual rate.",
+          {"monthly": {"type": ["number", "null"], "description": "rupees per month; null = the quick-wins total"},
+           "years": {"type": "integer"}, "rate_pct": {"type": ["number", "null"], "description": "illustrative annual rate, default 10"}}),
+    _tool("friend_ledger", "Money sent to and received back from people over UPI/IMPS, per person.", {}),
+    _tool("quick_wins", "The few non-overlapping saving actions and their combined monthly total.", {}),
     _tool("simulate_savings", "What-if: saving and new savings rate if spending in categories or merchants is cut by a percentage.",
           {"changes": {"type": "array", "items": _CHANGE}, "months": {"type": "integer"}}),
 ]
 FUNCS = {f.__name__: f for f in (an.get_overview, an.category_breakdown, an.top_merchants, an.monthly_trend, an.search_transactions,
-                                 an.find_recurring, an.find_anomalies, an.generate_insights, an.simulate_savings, an.plan_goal)}
+                                 an.find_recurring, an.find_anomalies, an.generate_insights, an.simulate_savings, an.plan_goal,
+                                 an.future_you, an.friend_ledger, an.quick_wins)}
 
 _ACCT, _PHONE, _EMAIL = re.compile(r"\d{9,18}"), re.compile(r"(?<!\d)[6-9]\d{9}(?!\d)"), re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")
 
@@ -97,11 +113,12 @@ def stream_chat(session, user_text, client=None):
     df = redact(session["df"])
     msgs = session["history"]
     msgs.append({"role": "user", "content": user_text})
+    answer, results = "", []
     try:
         for _ in range(MAX_TURNS):
             text, calls, finish, usage = "", {}, None, None
             for chunk in client.chat.completions.create(model=MODEL, messages=[{"role": "system", "content": SYSTEM}] + msgs, tools=TOOLS,
-                                                        tool_choice="auto", stream=True, max_tokens=2048, temperature=0.2):
+                                                        tool_choice="auto", stream=True, max_tokens=2048, temperature=0.2, reasoning_effort="low"):
                 usage = getattr(getattr(chunk, "x_groq", None), "usage", None) or getattr(chunk, "usage", None) or usage
                 if not chunk.choices:
                     continue
@@ -109,6 +126,7 @@ def stream_chat(session, user_text, client=None):
                 finish = ch.finish_reason or finish
                 if ch.delta.content:
                     text += ch.delta.content
+                    answer += ch.delta.content
                     yield "text", ch.delta.content
                 for tc in ch.delta.tool_calls or []:
                     c = calls.setdefault(tc.index, {"id": "", "name": "", "arguments": ""})
@@ -130,9 +148,12 @@ def stream_chat(session, user_text, client=None):
                     args = json.loads(c["arguments"] or "{}")
                     out = run_tool(df, c["name"], args)
                     msgs.append({"role": "tool", "tool_call_id": c["id"], "content": json.dumps(out)})
+                    results.append(out)
                     yield "receipt", {"tool": c["name"], "args": args, "result": out}
                 except Exception as e:
                     msgs.append({"role": "tool", "tool_call_id": c["id"], "content": f"error: {e}"})
     except groq.APIError as e:
         yield "notice", f"The AI service had a problem ({type(e).__name__}). Please try again."
+    if answer:
+        yield "grounding", grounding.check(answer, results, user_text)
     yield "done", None

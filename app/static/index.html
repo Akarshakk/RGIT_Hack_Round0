@@ -35,6 +35,7 @@
   <div class="topbar-actions" id="dashActions" hidden>
     <span class="period" id="periodLabel"></span>
     <button class="btn ghost" id="replayBtn" type="button">Replay my Wrapped</button>
+    <button class="btn ghost" id="shareBtn" type="button">Download share card</button>
     <button class="btn danger" id="delBtn" type="button">Delete my data</button>
   </div>
 </header>
@@ -200,6 +201,31 @@
         <div class="tips" id="tips"></div>
       </section>
 
+      <section class="panel future">
+        <div class="panel-head"><h2>Future you</h2><span class="hint">Illustrative compounding, not a forecast or investment advice</span></div>
+        <div class="future-grid">
+          <div class="future-controls">
+            <label for="fyMonthly">Put away each month</label>
+            <span class="inr-in big-in">₹<input id="fyMonthly" type="number" min="0" step="100" /></span>
+            <label for="fyYears">For <b id="fyYearsOut">10 years</b></label>
+            <div class="slider"><input id="fyYears" type="range" min="1" max="30" value="10" /></div>
+            <label>At an assumed yearly return of</label>
+            <div class="seg" id="fyRate" role="group" aria-label="Assumed yearly return">
+              <button type="button" data-r="6">6%</button><button type="button" data-r="10" aria-pressed="true">10%</button><button type="button" data-r="12">12%</button>
+            </div>
+          </div>
+          <div class="future-out">
+            <p class="fy-line" id="fyLine"></p>
+            <div class="fy-chart"><svg id="fyChart" role="img" aria-label="Growth of monthly savings over time"></svg><div class="mtip" id="fyTip" hidden></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Friend ledger</h2><span class="hint">UPI and IMPS money to and from people</span></div>
+        <div class="friends-dash" id="friends"></div>
+      </section>
+
       <div class="duo">
         <section class="panel">
           <div class="panel-head"><h2>What if I cut…</h2></div>
@@ -235,6 +261,9 @@
       </div>
       <div class="sugg" id="sugg"></div>
       <form class="ask" id="askForm">
+        <button type="button" class="mic" id="micBtn" aria-label="Ask by voice" title="Ask by voice (English or Hindi)" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" stroke-linecap="round"/></svg>
+        </button>
         <input id="q" type="text" placeholder="Ask about your money…" autocomplete="off" />
         <button class="btn primary sm" type="submit">Ask</button>
       </form>

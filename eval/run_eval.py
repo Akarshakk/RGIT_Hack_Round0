@@ -17,9 +17,10 @@ from dotenv import load_dotenv  # noqa: E402
 load_dotenv(ROOT / ".env")
 from app.categorize import categorize  # noqa: E402
 from app.chat import stream_chat  # noqa: E402
+from app.grounding import check as grounding_check  # noqa: E402
 from app.ingest import load_statement  # noqa: E402
 
-PRICE = dict(input_tokens=0.59e-6, output_tokens=0.79e-6)  # llama-3.3-70b on Groq, $/token (check current pricing)
+PRICE = dict(input_tokens=0.15e-6, output_tokens=0.75e-6)  # openai/gpt-oss-120b on Groq, $/token (check current pricing)
 NUM = re.compile(r"\d[\d,]*\.?\d*")
 nums = lambda s: {float(x.replace(",", "")) for x in NUM.findall(str(s)) if x.replace(",", "").replace(".", "").isdigit()}
 
@@ -28,7 +29,7 @@ def rupee_figures(reply):
     return {float(m.replace(",", "")) for m in re.findall(r"(?:₹|Rs\.?)\s*(\d[\d,]*\.?\d*)", reply)}
 
 
-def score(q, reply, tools, tool_text):
+def score(q, reply, tools, results):
     r = {}
     low = reply.lower()
     if q.get("refusal"):
@@ -38,9 +39,8 @@ def score(q, reply, tools, tool_text):
         r["numbers"] = all(any(abs(g - n) <= max(1, abs(n) * 0.005) for g in got) for n in q.get("numbers", []))
         r["text"] = all(re.search(t, low) for t in q.get("text", []))
         r["tools"] = all(t in tools for t in q.get("tools", []))
-    figs = rupee_figures(reply) - nums(q["q"])
-    pool = nums(tool_text)
-    r["grounded"] = (sum(f in pool for f in figs), len(figs))
+    g = grounding_check(reply, results, q["q"])  # same check the UI badge uses: ₹ figures and percentages
+    r["grounded"] = (g["verified"], g["total"])
     return r
 
 
@@ -52,16 +52,16 @@ def main():
     rows, cost, lat = [], 0.0, 0.0
     for q in Q:
         session = dict(df=df, history=[])  # fresh conversation per question
-        reply, tools, tool_text, c, t0 = "", [], "", 0.0, time.time()
+        reply, tools, results, c, t0 = "", [], [], 0.0, time.time()
         for ev, d in stream_chat(session, q["q"]):
             if ev in ("text", "notice"):
                 reply += d
             elif ev == "receipt":
-                tools.append(d["tool"]); tool_text += json.dumps(d["result"])
+                tools.append(d["tool"]); results.append(d["result"])
             elif ev == "usage":
                 c += sum(PRICE[k] * v for k, v in d.items())
         lat += time.time() - t0; cost += c
-        rows.append((q, reply, score(q, reply, tools, tool_text)))
+        rows.append((q, reply, score(q, reply, tools, results)))
     ok = lambda r: all(v for k, v in r.items() if k != "grounded")
     for q, _, r in rows:
         print("PASS" if ok(r) else "FAIL", q["q"])
@@ -70,7 +70,7 @@ def main():
     g_hit = sum(r["grounded"][0] for *_, r in rows); g_all = sum(r["grounded"][1] for *_, r in rows)
     n = len(rows)
     md = ["# Eval results", "", f"- Answer accuracy: {sum(ans)}/{len(ans)} = {sum(ans) / len(ans):.0%}",
-          f"- Grounding rate (rupee figures traceable to tool results): {g_hit}/{g_all} = {g_hit / max(g_all, 1):.0%}",
+          f"- Grounding rate (₹ figures and percentages traceable to tool results): {g_hit}/{g_all} = {g_hit / max(g_all, 1):.0%}",
           f"- Refusal compliance: {sum(ref)}/{len(ref)}", f"- Avg latency per turn: {lat / n:.1f}s", f"- Avg cost per turn: ${cost / n:.4f} (estimated from usage)",
           "", "| Question | Result | Grounded |", "|---|---|---|"]
     for q, reply, r in rows:

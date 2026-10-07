@@ -219,3 +219,49 @@ def plan_goal(df, target, months):
             covered += i["monthly_saving_estimate"]
     return dict(target=R(target), months=months, monthly_needed=R(need), current_monthly_surplus=R(surplus), gap=R(gap),
                 on_track=bool(gap == 0), tips_to_close_gap=picks, gap_after_tips=R(max(0.0, gap - covered)))
+
+
+def quick_wins(df):
+    """Non-overlapping saving actions (weekend food OR small orders, unused subscription, fees, a spike) with ₹/month."""
+    ins = {i["id"]: i for i in generate_insights(df)}
+    wins = []
+    if "weekend_effect" in ins:
+        wins.append(("Cut weekend food orders by 30%", ins["weekend_effect"]["monthly_saving_estimate"]))
+    elif "small_spend_leak" in ins:
+        wins.append(("Skip one in four small food orders", ins["small_spend_leak"]["monthly_saving_estimate"]))
+    unused = [s for s in find_recurring(df) if s["possibly_unused"]]
+    if unused:
+        wins.append((f"Drop {unused[0]['merchant'].title()} if you've stopped going", unused[0]["monthly_cost"]))
+    if "avoidable_fees" in ins:
+        wins.append(("Pay bills on time, no late fees", ins["avoidable_fees"]["monthly_saving_estimate"]))
+    if "category_spike" in ins and len(wins) < 3:
+        wins.append((f"Bring {ins['category_spike']['evidence']['category']} back to normal", ins["category_spike"]["monthly_saving_estimate"]))
+    wins = [dict(action=t, monthly_saving=R(v)) for t, v in wins if v > 0]
+    return dict(wins=wins, monthly_total=sum(w["monthly_saving"] for w in wins))
+
+
+def future_you(df, monthly=None, years=10, rate_pct=10.0):
+    """What a monthly saving grows to, compounded monthly at an ILLUSTRATIVE annual rate (not a product or a promise).
+    monthly defaults to the quick-wins total."""
+    monthly = float(quick_wins(df)["monthly_total"] if monthly is None else monthly)
+    years, r = max(1, min(int(years), 40)), float(rate_pct) / 100 / 12
+    bal, series = 0.0, []
+    for m in range(1, years * 12 + 1):
+        bal = bal * (1 + r) + monthly
+        if m % 12 == 0:
+            series.append(dict(year=m // 12, value=R(bal), contributed=R(monthly * m)))
+    end_year = int(df.date.max().year) + years
+    return dict(monthly=R(monthly), years=years, illustrative_rate_pct=rate_pct, final_value=R(bal), contributed=R(monthly * years * 12),
+                growth=R(bal - monthly * years * 12), by_year=end_year, series=series,
+                note="Illustrative compounding only. Not a forecast or an investment recommendation.")
+
+
+def friend_ledger(df):
+    """Money sent to and received from people (UPI P2P / IMPS transfers), per person."""
+    p = df[df.counterparty.notna() & (df.category != "Income") & (df.category != "Rent")]
+    if not len(p):
+        return dict(people=[], sent=0, received=0)
+    g = p.groupby("merchant").amount.agg(sent=lambda s: -s[s < 0].sum(), received=lambda s: s[s > 0].sum(), payments="size")
+    people = [dict(name=m, sent=R(r.sent), received=R(r.received), payments=int(r.payments), net=R(r.received - r.sent))
+              for m, r in g.sort_values("sent", ascending=False).iterrows()]
+    return dict(people=people, sent=R(g.sent.sum()), received=R(g.received.sum()))

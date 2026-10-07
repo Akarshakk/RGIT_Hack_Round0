@@ -83,7 +83,7 @@ def overview(period: str | None = None, sid: str | None = Cookie(None)):
     df = _session(sid)["df"]
     return dict(overview=an.get_overview(df, period), categories=an.category_breakdown(df, period),
                 buckets=_buckets(df, period), trend=an.monthly_trend(df), trend_buckets=_trend_buckets(df),
-                insights=an.generate_insights(df))
+                insights=an.generate_insights(df), friends=an.friend_ledger(df), quick_wins=an.quick_wins(df))
 
 
 def _trend_buckets(df):
@@ -122,6 +122,11 @@ def recat(merchant: str = Body(...), category: str = Body(...), sid: str | None 
 @app.post("/simulate")
 def simulate(changes: list[dict] = Body(..., embed=True), sid: str | None = Cookie(None)):
     return an.simulate_savings(_session(sid)["df"], changes)
+
+
+@app.get("/future")
+def future(monthly: float | None = None, years: int = 10, rate_pct: float = 10.0, sid: str | None = Cookie(None)):
+    return an.future_you(_session(sid)["df"], monthly, years, max(0.0, min(rate_pct, 20.0)))
 
 
 @app.post("/goal")
