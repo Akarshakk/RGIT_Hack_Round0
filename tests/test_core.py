@@ -165,7 +165,7 @@ def test_all_tool_outputs_json_serializable():
     from app.chat import run_tool
     df = redact(_df())
     args = dict(period=None, bucket=None, category=None, n=5, query=None, min_amount=None, limit=5, changes=[
-        {"category": "Food & Dining", "merchant": None, "cut_pct": 10}], months=12, target=90000, monthly=None, years=10, rate_pct=None)
+        {"category": "Food & Dining", "merchant": None, "cut_pct": 10}], months=12, target=90000, monthly=None, years=10, rate_pct=None, target_monthly=5000)
     for t in TOOLS:
         json.dumps(run_tool(df, t["function"]["name"], {k: args[k] for k in t["function"]["parameters"]["properties"]}))
 

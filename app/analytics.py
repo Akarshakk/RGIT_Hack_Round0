@@ -221,8 +221,9 @@ def plan_goal(df, target, months):
                 on_track=bool(gap == 0), tips_to_close_gap=picks, gap_after_tips=R(max(0.0, gap - covered)))
 
 
-def quick_wins(df):
-    """Non-overlapping saving actions (weekend food OR small orders, unused subscription, fees, a spike) with ₹/month."""
+def quick_wins(df, target_monthly=None):
+    """Non-overlapping saving actions (weekend food OR small orders, unused subscription, fees, a spike) with ₹/month.
+    With a target, also says how far the wins get you, so nobody has to add them up by hand."""
     ins = {i["id"]: i for i in generate_insights(df)}
     wins = []
     if "weekend_effect" in ins:
@@ -237,7 +238,12 @@ def quick_wins(df):
     if "category_spike" in ins and len(wins) < 3:
         wins.append((f"Bring {ins['category_spike']['evidence']['category']} back to normal", ins["category_spike"]["monthly_saving_estimate"]))
     wins = [dict(action=t, monthly_saving=R(v)) for t, v in wins if v > 0]
-    return dict(wins=wins, monthly_total=sum(w["monthly_saving"] for w in wins))
+    out = dict(wins=wins, monthly_total=sum(w["monthly_saving"] for w in wins))
+    if target_monthly:
+        out.update(target_monthly=R(target_monthly), meets_target=out["monthly_total"] >= target_monthly,
+                   shortfall=R(max(0, target_monthly - out["monthly_total"])),
+                   biggest_categories_to_trim=[c["category"] for c in category_breakdown(df, bucket="Want")[:3]])
+    return out
 
 
 def future_you(df, monthly=None, years=10, rate_pct=10.0):

@@ -75,7 +75,8 @@ def main():
     ref = [r["refusal"] for q, _, r in rows if q.get("refusal")]
     g_hit = sum(r["grounded"][0] for *_, r in rows); g_all = sum(r["grounded"][1] for *_, r in rows)
     n = len(rows)
-    md = ["# Eval results", "", f"- Answer accuracy: {sum(ans)}/{len(ans)} = {sum(ans) / len(ans):.0%}",
+    from app.chat import MODEL as M, FALLBACK as F
+    md = ["# Eval results", "", f"- Model: {M} (fallback {F}), {time.strftime('%Y-%m-%d %H:%M')}", f"- Answer accuracy: {sum(ans)}/{len(ans)} = {sum(ans) / len(ans):.0%}",
           f"- Grounding rate (₹ figures and percentages traceable to tool results): {g_hit}/{g_all} = {g_hit / max(g_all, 1):.0%}",
           f"- Refusal compliance: {sum(ref)}/{len(ref)}", f"- Avg latency per turn: {lat / n:.1f}s", f"- Avg cost per turn: ${cost / n:.4f} (estimated from usage)",
           "", "| Question | Result | Grounded |", "|---|---|---|"]

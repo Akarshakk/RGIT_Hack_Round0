@@ -25,7 +25,7 @@ Numbers (most important):
 - Write money in rupees with Indian digit grouping, e.g. ₹1,23,456.
 
 Advice:
-- Give tips as specific actions with the expected monthly saving, taken from `monthly_saving_estimate`, `quick_wins` or `simulate_savings`.
+- For "how can I save ₹X a month": call `quick_wins` with target_monthly=X, list its wins with their amounts, then quote its `monthly_total` and, if any, its `shortfall`. To close a shortfall, suggest trimming `biggest_categories_to_trim` in words only, or call `simulate_savings` for exact amounts. Never invent a saving amount.
 - For "future me / long term / what will this become" questions, use `future_you` and say its rate is illustrative, not a promise.
 - Merchant and person names in tool results are already masked; use them as given.
 
@@ -46,11 +46,23 @@ def _optional(spec):
     return isinstance(t, list) and "null" in t
 
 
+def _loose(spec):
+    """Move an enum into the description: Groq rejects a whole tool call when one value is off-list (e.g. a category passed
+    as a bucket); run_tool cleans such values up instead."""
+    spec = dict(spec)
+    if "enum" in spec:
+        spec["description"] = (spec.get("description", "") + " One of: " + ", ".join(v for v in spec.pop("enum") if v)).strip()
+    if spec.get("type") == "array" and "items" in spec:
+        spec["items"] = dict(spec["items"], properties={k: _loose(v) for k, v in spec["items"]["properties"].items()})
+    return spec
+
+
 def _tool(name, description, props):
     """Nullable parameters are optional: Groq validates tool calls and rejects ones missing a 'required' field."""
     return {"type": "function", "function": {"name": name, "description": description,
             "parameters": {"type": "object", "additionalProperties": False,
-                           "required": [k for k, v in props.items() if not _optional(v)], "properties": props}}}
+                           "required": [k for k, v in props.items() if not _optional(v)],
+                           "properties": {k: _loose(v) for k, v in props.items()}}}}
 
 
 TOOLS = [
@@ -72,7 +84,8 @@ TOOLS = [
           {"monthly": {"type": ["number", "null"], "description": "rupees per month; null = the quick-wins total"},
            "years": {"type": "integer"}, "rate_pct": {"type": ["number", "null"], "description": "illustrative annual rate, default 10"}}),
     _tool("friend_ledger", "Money sent to and received back from people over UPI/IMPS, per person.", {}),
-    _tool("quick_wins", "The few non-overlapping saving actions and their combined monthly total.", {}),
+    _tool("quick_wins", "The few non-overlapping saving actions, their combined monthly total, and (given a target) the shortfall. Use for any 'how can I save ₹X' question.",
+          {"target_monthly": {"type": ["number", "null"], "description": "the user's monthly saving target in rupees, if they gave one"}}),
     _tool("simulate_savings", "What-if: saving and new savings rate if spending in categories or merchants is cut by a percentage.",
           {"changes": {"type": "array", "items": _CHANGE}, "months": {"type": "integer"}}),
 ]
@@ -102,11 +115,45 @@ def redact(df):
     return df
 
 
+BUCKETS = ["Need", "Want", "Savings", "Transfer"]
+
+
+def _pick(value, allowed):
+    """Case-insensitive match to an allowed value (prefix allowed: 'emi' -> 'EMI & Loans'); None if nothing fits."""
+    if not isinstance(value, str):
+        return None
+    v = value.strip().lower()
+    return next((a for a in allowed if a.lower() == v), None) or next((a for a in allowed if a.lower().startswith(v) or v.startswith(a.lower())), None)
+
+
 def run_tool(df, name, args):
     args = {k: v for k, v in args.items() if v is not None}
+    if "bucket" in args:  # a category passed as a bucket becomes a category filter where the tool has one
+        b = _pick(args["bucket"], BUCKETS)
+        if not b and "category" in FUNCS[name].__code__.co_varnames:
+            args.setdefault("category", args["bucket"])
+        args["bucket"] = b
+        if b is None:
+            args.pop("bucket")
+    if "category" in args:
+        c = _pick(args["category"], CATEGORIES)
+        args["category"] = c
+        if c is None:
+            args.pop("category")
     if name == "simulate_savings":
-        args["changes"] = [{k: v for k, v in c.items() if v is not None} for c in args.get("changes", [])]
-    return FUNCS[name](df, **args)
+        changes = []
+        for c in args.get("changes", []):
+            c = {k: v for k, v in c.items() if v is not None}
+            if "category" in c:
+                picked = _pick(c["category"], CATEGORIES)
+                if picked:
+                    c["category"] = picked
+                else:
+                    c.pop("category")
+            changes.append(c)
+        args["changes"] = changes
+    allowed = FUNCS[name].__code__.co_varnames[1:FUNCS[name].__code__.co_argcount]
+    return FUNCS[name](df, **{k: v for k, v in args.items() if k in allowed})
 
 
 def _create(client, groq, messages, tries=3):
