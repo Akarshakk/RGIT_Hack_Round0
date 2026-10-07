@@ -114,7 +114,8 @@ def redact(df):
         n = _EMAIL.sub("[email]", n)
         narr.append(_ACCT.sub("[acct]", _PHONE.sub("[phone]", n)))
     df["narration"] = narr
-    df["merchant"] = [people[cp] if cp else m for m, cp in zip(df["merchant"], cps)]
+    cats = list(df["category"]) if "category" in df else [None] * len(df)
+    df["merchant"] = [(f"Landlord ({people[cp]})" if cat == "Rent" else people[cp]) if cp else m for m, cp, cat in zip(df["merchant"], cps, cats)]
     return df
 
 

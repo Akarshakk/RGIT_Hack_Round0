@@ -148,7 +148,10 @@
  {
   "q": "How much did I spend at Swiggy and Zomato together?",
   "tools": [
-   "top_merchants"
+   "top_merchants|search_transactions"
+  ],
+  "numbers": [
+   22552
   ]
  },
  {
