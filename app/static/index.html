@@ -1,97 +1,1994 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kharcha</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Finance — Intelligent Personal Finance & Advisory</title>
+<meta name="description" content="AI Finance Solutions offers cutting-edge artificial intelligence for banking and finance, transforming statements into actionable insights." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
 <style>
-:root{--bg:#f6f7fb;--card:#fff;--ink:#1c2230;--mute:#667085;--line:#e4e7ee;--brand:#5b4bdb;--good:#12805c;--warn:#b54708;--bad:#b42318}
-@media (prefers-color-scheme:dark){:root{--bg:#10131a;--card:#181c26;--ink:#e8eaf0;--mute:#98a2b3;--line:#2a3040;--brand:#8b7dff;--good:#4ade80;--warn:#fbbf24;--bad:#f87171}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--card)}
-header b{font-size:18px;color:var(--brand)}
-button,select,input{font:inherit;color:inherit}
-button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:8px 12px;cursor:pointer}
-button.primary{background:var(--brand);border-color:var(--brand);color:#fff}
-button.danger{color:var(--bad)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
-.card h3{margin:0 0 8px;font-size:14px;color:var(--mute);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
-#upload{max-width:560px;margin:32px auto;padding:0 16px}
-#drop{border:2px dashed var(--line);border-radius:12px;padding:36px 16px;text-align:center;cursor:pointer}
-#drop.over{border-color:var(--brand)}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
-.note{color:var(--mute);font-size:13px}
-.err{color:var(--bad);margin-top:8px}
-#app{display:none;padding:12px 16px;max-width:1300px;margin:auto}
-.tabs{display:none;gap:8px;margin-bottom:10px}
-.grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;align-items:start}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
-.kpi small{color:var(--mute)} .kpi div{font-size:20px;font-weight:700}
-.charts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.cv{position:relative;height:230px}
-.bar{display:flex;height:22px;border-radius:6px;overflow:hidden;font-size:12px;color:#fff}
-.bar span{display:flex;align-items:center;justify-content:center;white-space:nowrap}
-.tip{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
-.tip:first-of-type{border-top:0}
-.save{color:var(--good);font-weight:700;white-space:nowrap}
-.sev-high{border-left:4px solid var(--bad);padding-left:8px}.sev-medium{border-left:4px solid var(--warn);padding-left:8px}.sev-low{border-left:4px solid var(--good);padding-left:8px}
-#chat{position:sticky;top:8px;display:flex;flex-direction:column;height:calc(100vh - 90px);min-height:420px}
-#msgs{flex:1;overflow:auto;padding:4px}
-.m{margin:6px 0;padding:8px 10px;border-radius:10px;max-width:92%;white-space:pre-wrap}
-.m.u{background:var(--brand);color:#fff;margin-left:auto}.m.a{background:var(--bg);border:1px solid var(--line)}
-.chip{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:2px 9px;margin:3px 4px 0 0;font-size:12px;cursor:pointer;background:var(--card)}
-.chip.rc{color:var(--brand)}
-pre{background:var(--bg);padding:8px;border-radius:8px;overflow:auto;max-height:220px;font-size:12px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-td,th{padding:5px 6px;border-top:1px solid var(--line);text-align:left}
-td.n{text-align:right;white-space:nowrap}
-#txwrap{max-height:340px;overflow:auto}
-input[type=range]{width:100%}
-@media (max-width:900px){.grid{grid-template-columns:1fr}.tabs{display:flex}.kpis{grid-template-columns:repeat(2,1fr)}.charts{grid-template-columns:1fr}#chat{position:static;height:75vh}body.t-dash #chatcol{display:none}body.t-chat #dashcol{display:none}}
-@media print{header button,#chatcol,#upload,.tabs,.noprint{display:none!important}.grid{display:block}}
+:root {
+  --bg-dark: #03021b;
+  --bg-card: rgba(255, 255, 255, 0.05);
+  --bg-card-hover: rgba(255, 255, 255, 0.08);
+  --bg-card-solid: #090a24;
+  --text-main: #f2eeee;
+  --text-white: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.65);
+  --text-dim: rgba(255, 255, 255, 0.45);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-glow: rgba(255, 255, 255, 0.15);
+  --accent-blue: #0ea5e9;
+  --accent-cyan: #a5edee;
+  --accent-indigo: #6366f1;
+  --accent-mint: #4ade80;
+  --accent-amber: #fbbf24;
+  --accent-coral: #f87171;
+  --radius-pill: 9999px;
+  --radius-card: 16px;
+  --radius-sm: 8px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: "DM Sans", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Background Scene & Lighting (matching peachweb 3D ambient space) */
+.ambient-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.ambient-glow-top-right {
+  position: absolute;
+  top: -15vh;
+  right: -10vw;
+  width: 65vw;
+  height: 65vw;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(20, 50, 160, 0.28) 0%, rgba(10, 20, 80, 0.12) 45%, transparent 70%);
+  filter: blur(40px);
+}
+
+.ambient-glow-bottom-left {
+  position: absolute;
+  bottom: -20vh;
+  left: -15vw;
+  width: 60vw;
+  height: 60vw;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(30, 20, 100, 0.3) 0%, rgba(5, 5, 30, 0.1) 50%, transparent 70%);
+  filter: blur(50px);
+}
+
+.vignette-rim {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  box-shadow: inset 0 0 100px rgba(13, 30, 95, 0.35);
+}
+
+/* Noise overlay */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* 3D Visual Accents for Hero */
+.hero-visual-ribs {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 45vw;
+  height: 100vh;
+  pointer-events: none;
+  opacity: 0.45;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.01) 0px,
+    rgba(255, 255, 255, 0.04) 18px,
+    rgba(0, 0, 0, 0.6) 24px,
+    transparent 42px
+  );
+  mask-image: radial-gradient(ellipse 90% 70% at 20% 40%, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 20% 40%, black 30%, transparent 80%);
+}
+
+.hero-visual-orb {
+  position: absolute;
+  top: 10vh;
+  right: 5vw;
+  width: 440px;
+  height: 440px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 75% 30%, rgba(165, 237, 238, 0.15), rgba(20, 45, 120, 0.4) 40%, #03021b 80%);
+  box-shadow: inset -4px -4px 40px rgba(255, 255, 255, 0.15), 0 0 80px rgba(14, 165, 233, 0.15);
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* Page wrapper */
+.page-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* Header & Floating Navbar */
+header.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+  padding: 24px 40px;
+  pointer-events: auto;
+}
+
+.header-inner {
+  max-width: 1360px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-logo {
+  font-family: "DM Sans", sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-logo span.dot {
+  width: 7px;
+  height: 7px;
+  background-color: var(--accent-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--accent-cyan);
+}
+
+.nav-pill-wrapper {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  padding: 5px 6px 5px 24px;
+  gap: 28px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: var(--text-white);
+}
+
+.btn-pill-dark {
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-pill);
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.btn-pill-dark:hover {
+  background: #111111;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.circle-arrow {
+  width: 18px;
+  height: 18px;
+  background: #ffffff;
+  color: #000000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Button styles */
+.btn-white {
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 13px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+}
+
+.btn-white:hover {
+  background: #ebebeb;
+  transform: translateY(-1px);
+}
+
+.btn-white .circle-arrow-black {
+  width: 20px;
+  height: 20px;
+  background: #000000;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+
+.btn-glass {
+  background: rgba(255, 255, 255, 0.07);
+  color: #ffffff;
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-pill);
+  padding: 13px 24px;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: all 0.2s ease;
+}
+
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Typography Tokens */
+.kicker {
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  line-height: 1em;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+}
+
+.h1-hero {
+  font-family: "DM Sans", sans-serif;
+  font-size: 56px;
+  line-height: 1.05em;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--text-main);
+  margin-bottom: 16px;
+}
+
+.h2-section {
+  font-family: "DM Sans", sans-serif;
+  font-size: 40px;
+  line-height: 1.1em;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--text-main);
+}
+
+.lead-p {
+  font-family: "DM Sans", sans-serif;
+  font-size: 18px;
+  line-height: 1.4em;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--text-muted);
+}
+
+/* Hero Section */
+section.hero-section {
+  min-height: 95vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: 80px;
+  padding-top: 140px;
+  position: relative;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  align-items: flex-end;
+  gap: 40px;
+}
+
+.hero-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.hero-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.hero-sub-text {
+  font-size: 17px;
+  font-weight: 300;
+  color: var(--text-muted);
+}
+
+.avatar-stack {
+  display: flex;
+  align-items: center;
+}
+
+.avatar-stack img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-dark);
+  margin-left: -8px;
+  object-fit: cover;
+}
+
+.avatar-stack img:first-child {
+  margin-left: 0;
+}
+
+.hero-right {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 480px;
+  margin-left: auto;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Sections Common */
+section.site-section {
+  padding: 100px 0;
+  position: relative;
+}
+
+.section-head {
+  margin-bottom: 48px;
+}
+
+.section-head.center {
+  text-align: center;
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section-head p.lead-p {
+  margin-top: 12px;
+}
+
+/* Solutions & Interactive Application Container */
+.solutions-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-card);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  padding: 36px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.solutions-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 24px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+}
+
+.status-badge .indicator {
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent-mint);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent-mint);
+}
+
+/* Upload State UI */
+#upload {
+  max-width: 840px;
+  margin: 0 auto;
+}
+
+.dropzone {
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  padding: 56px 24px;
+  text-align: center;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.02);
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.dropzone:hover, .dropzone.over {
+  border-color: var(--accent-cyan);
+  background: rgba(165, 237, 238, 0.04);
+}
+
+.dropzone-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  opacity: 0.8;
+}
+
+.dropzone-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-white);
+  margin-bottom: 6px;
+}
+
+.dropzone-sub {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.input-dark {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-glow);
+  color: var(--text-white);
+  padding: 11px 16px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input-dark:focus {
+  border-color: var(--accent-cyan);
+}
+
+.select-dark {
+  background: #090a24;
+  border: 1px solid var(--border-glow);
+  color: var(--text-white);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.privacy-notice {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-dim);
+  margin-top: 24px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 18px;
+}
+
+.error-banner {
+  color: var(--accent-coral);
+  font-size: 13px;
+  margin-top: 12px;
+  font-weight: 500;
+}
+
+/* Dashboard App State */
+#app {
+  display: none;
+  width: 100%;
+}
+
+.app-grid {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Left Column: Metrics & Analytics */
+.kpis-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.kpi-tile {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 16px;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.kpi-tile:hover {
+  border-color: var(--border-glow);
+  transform: translateY(-2px);
+}
+
+.kpi-tile small {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  font-weight: 500;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.kpi-tile div {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text-white);
+  letter-spacing: -0.02em;
+}
+
+/* Dashboard sub-cards */
+.dash-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 20px;
+}
+
+.dash-card h3 {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.chart-box {
+  position: relative;
+  height: 240px;
+  width: 100%;
+}
+
+/* 50 / 30 / 20 rule bar */
+.rule-bar {
+  display: flex;
+  height: 24px;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 600;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.rule-bar span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  padding: 0 8px;
+  transition: width 0.3s ease;
+}
+
+.rule-note {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 10px;
+}
+
+/* Saving tips list */
+.tip-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 10px;
+}
+
+.tip-item:last-child {
+  margin-bottom: 0;
+}
+
+.tip-title {
+  font-size: 14px;
+  color: var(--text-main);
+  font-weight: 400;
+}
+
+.tip-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  white-space: nowrap;
+}
+
+.tip-save {
+  color: var(--accent-mint);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.tip-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-glow);
+  color: #fff;
+  border-radius: var(--radius-pill);
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.tip-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.sev-high { border-left: 3px solid var(--accent-coral); }
+.sev-medium { border-left: 3px solid var(--accent-amber); }
+.sev-low { border-left: 3px solid var(--accent-mint); }
+
+/* What-if and Goal Planner */
+.slider-group {
+  margin-bottom: 14px;
+}
+
+.slider-group label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: var(--text-muted);
+}
+
+input[type=range] {
+  width: 100%;
+  accent-color: var(--accent-cyan);
+  cursor: pointer;
+}
+
+.sim-output {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  color: var(--accent-mint);
+  font-weight: 500;
+  font-size: 13px;
+  display: none;
+}
+
+/* Transactions Table */
+.table-scroll {
+  max-height: 380px;
+  overflow-y: auto;
+  border-radius: 8px;
+}
+
+table.tx-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+table.tx-table th {
+  position: sticky;
+  top: 0;
+  background: #0a0c28;
+  color: var(--text-dim);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 11px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  text-align: left;
+}
+
+table.tx-table td {
+  padding: 9px 12px;
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-main);
+}
+
+table.tx-table td.amount-neg {
+  color: #ffffff;
+  font-weight: 500;
+  text-align: right;
+  white-space: nowrap;
+}
+
+table.tx-table td.amount-pos {
+  color: var(--accent-mint);
+  font-weight: 500;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Right Column: AI Chat Panel */
+.chat-container {
+  position: sticky;
+  top: 96px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 120px);
+  min-height: 540px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 14px;
+}
+
+.chat-header-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-white);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-header-title .pulse {
+  width: 7px;
+  height: 7px;
+  background-color: var(--accent-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent-cyan);
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-msg {
+  padding: 12px 16px;
+  border-radius: 14px;
+  max-width: 90%;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.chat-msg.user {
+  background: #182042;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: #ffffff;
+  margin-left: auto;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-msg.assistant {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  margin-right: auto;
+  border-bottom-left-radius: 4px;
+}
+
+.chips-wrapper {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chat-chip {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  padding: 5px 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chat-chip:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-color: var(--border-glow);
+}
+
+.chat-chip.receipt-chip {
+  color: var(--accent-cyan);
+  border-color: rgba(165, 237, 238, 0.2);
+}
+
+.chat-input-row {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+pre.receipt-box {
+  background: #090a24;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--accent-cyan);
+  max-height: 180px;
+  overflow: auto;
+  margin-top: 6px;
+}
+
+/* Partners Grid */
+.partners-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.partner-card {
+  height: 110px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.partner-card:hover {
+  border-color: var(--border-glow);
+  background: var(--bg-card-hover);
+}
+
+.partner-card img {
+  max-width: 140px;
+  max-height: 48px;
+  opacity: 0.8;
+  filter: brightness(0) invert(1);
+  transition: opacity 0.2s;
+}
+
+.partner-card:hover img {
+  opacity: 1;
+}
+
+/* Features Grid */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.feature-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-glow);
+}
+
+.feature-img-wrap {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background: #060822;
+}
+
+.feature-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.feature-card:hover .feature-img-wrap img {
+  transform: scale(1.03);
+}
+
+.feature-content {
+  padding: 28px;
+}
+
+.feature-content h3 {
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--text-white);
+  margin-bottom: 8px;
+}
+
+.feature-content p {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Key Features Showcase (01, 02, 03) */
+.key-features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+.key-feature-item {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 40px;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  padding: 40px;
+}
+
+.key-feature-item.reverse {
+  grid-template-columns: 1.2fr 1fr;
+}
+
+.key-feature-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.key-feature-content h1 {
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text-white);
+}
+
+.key-feature-media {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 340px;
+}
+
+.key-feature-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.key-feature-num {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+/* Services 4-Grid */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.service-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 32px 24px;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.service-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-glow);
+}
+
+.service-icon {
+  width: 44px;
+  height: 44px;
+  margin-bottom: 24px;
+}
+
+.service-card h2 {
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--text-white);
+  margin-bottom: 10px;
+}
+
+.service-card p {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+/* Benefits Stats Grid */
+.benefits-container {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.stat-tile {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 32px 24px;
+}
+
+.stat-tile h1 {
+  font-size: 48px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--text-white);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.stat-tile h4 {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+/* Testimonials */
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.testimonial-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.test-author {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.test-author img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.test-author h4 {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-white);
+}
+
+.test-author p {
+  font-size: 12px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.test-quote {
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--text-muted);
+  font-weight: 300;
+}
+
+/* Pricing Section */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.pricing-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  padding: 36px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  position: relative;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.pricing-card.featured {
+  border-color: rgba(165, 237, 238, 0.4);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.pricing-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-glow);
+}
+
+.pricing-card h3 {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--text-white);
+  margin-bottom: 6px;
+}
+
+.pricing-card .price {
+  font-size: 40px;
+  font-weight: 500;
+  color: var(--text-white);
+  letter-spacing: -0.03em;
+}
+
+.pricing-card .price span {
+  font-size: 18px;
+  color: var(--text-dim);
+}
+
+.pricing-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.pricing-features li {
+  font-size: 14px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pricing-features li img {
+  width: 14px;
+  height: 14px;
+  opacity: 0.7;
+}
+
+/* Footer Section */
+footer.site-footer {
+  border-top: 1px solid var(--border-subtle);
+  padding: 100px 0 40px;
+  position: relative;
+}
+
+.footer-hero {
+  margin-bottom: 80px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 40px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 40px;
+}
+
+.footer-brand h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.footer-col h4 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+}
+
+.footer-col ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-col ul a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.15s;
+}
+
+.footer-col ul a:hover {
+  color: #fff;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 1024px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .h1-hero { font-size: 44px; }
+  .partners-grid { grid-template-columns: repeat(2, 1fr); }
+  .features-grid { grid-template-columns: 1fr; }
+  .services-grid { grid-template-columns: repeat(2, 1fr); }
+  .benefits-container { grid-template-columns: 1fr; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .app-grid { grid-template-columns: 1fr; }
+  .kpis-grid { grid-template-columns: repeat(2, 1fr); }
+  .charts-row { grid-template-columns: 1fr; }
+  .chat-container { position: static; height: 600px; }
+  .key-feature-item, .key-feature-item.reverse { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+}
+
+@media print {
+  header, footer, .ambient-bg, .noise-overlay, .vignette-rim, #chatcol, #upload, .noprint {
+    display: none !important;
+  }
+  body, html {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .solutions-card, .dash-card, .kpi-tile {
+    background: transparent !important;
+    border: 1px solid #ddd !important;
+    color: #000 !important;
+    box-shadow: none !important;
+  }
+  .app-grid { display: block !important; }
+}
 </style>
 </head>
 <body class="t-dash">
-<header><b>Kharcha</b><span class="row" style="margin:0"><button id="printBtn" class="noprint" style="display:none">Download my report</button><button id="delBtn" class="danger" style="display:none">Delete my data</button></span></header>
 
-<section id="upload">
-  <div class="card">
-    <h3>Upload your bank statement</h3>
-    <div id="drop">Drop a CSV, XLSX or PDF here, or click to choose<input id="file" type="file" accept=".csv,.xlsx,.xls,.pdf" hidden></div>
-    <div class="row"><label>PDF password <input id="pw" type="password" placeholder="only if the PDF is locked"></label></div>
-    <div id="mapBox" style="display:none">
-      <p class="note">We couldn't detect the columns. Pick them:</p>
-      <div class="row"><label>Date <select id="mDate"></select></label><label>Description <select id="mNarr"></select></label><label>Amount (+credit / −debit) <select id="mAmt"></select></label><button class="primary" id="mapGo">Continue</button></div>
+<!-- Background Ambient Lighting & 3D Accents -->
+<div class="ambient-bg">
+  <div class="ambient-glow-top-right"></div>
+  <div class="ambient-glow-bottom-left"></div>
+  <div class="hero-visual-ribs"></div>
+  <div class="hero-visual-orb"></div>
+</div>
+<div class="noise-overlay"></div>
+<div class="vignette-rim"></div>
+
+<!-- Top Fixed Header -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/" class="brand-logo">
+      <span class="dot"></span>
+      AI Finance
+    </a>
+    <div class="nav-pill-wrapper">
+      <ul class="nav-links">
+        <li><a href="#solutions-section">Solutions</a></li>
+        <li><a href="#features-section">Features</a></li>
+        <li><a href="#services-section">Services</a></li>
+        <li><a href="#pricing-section">Pricing</a></li>
+      </ul>
+      <a href="#solutions-section" class="btn-pill-dark" id="navGetStarted">
+        Get Started
+        <span class="circle-arrow">></span>
+      </a>
     </div>
-    <div class="row"><button class="primary" id="sampleBtn">Try sample statement</button><button id="samplePdf">Try sample PDF (password-protected)</button></div>
-    <p class="note">🔒 Your file is processed in memory only and never saved. Personal details are masked before any AI sees them. By uploading you consent to this processing under India's DPDP Act. Delete everything any time with one click. Kharcha gives budgeting help, not investment advice.</p>
-    <div id="upErr" class="err"></div>
   </div>
-</section>
+</header>
 
-<main id="app">
-  <div class="tabs"><button id="tDash" class="primary">Dashboard</button><button id="tChat">Chat</button></div>
-  <div class="grid">
-    <div id="dashcol">
-      <div class="kpis" id="kpis"></div>
-      <div class="card"><h3>Where the money went</h3><div class="charts"><div class="cv"><canvas id="donut"></canvas></div><div class="cv"><canvas id="trend"></canvas></div></div></div>
-      <div class="card"><h3>50 / 30 / 20 check</h3><div class="bar" id="rule"></div><div class="note" id="ruleNote"></div></div>
-      <div class="card"><h3>Saving tips</h3><div id="tips"></div></div>
-      <div class="card noprint"><h3>What if I cut…</h3><div id="whatif"></div><div id="whatifOut" class="save"></div></div>
-      <div class="card noprint"><h3>Goal planner</h3><div class="row" style="margin:0">I want ₹<input id="gAmt" type="number" value="90000" style="width:100px"> in <input id="gMon" type="number" value="6" style="width:50px"> months <button id="gGo">Plan</button></div><div id="gOut" style="margin-top:8px"></div></div>
-      <div class="card"><h3>Transactions</h3><div id="txwrap"><table id="tx"></table></div></div>
-    </div>
-    <div id="chatcol">
-      <div class="card" id="chat">
-        <div id="msgs"><div class="m a">Hi! I'm Kharcha. Ask me about your spending, or how to save more.</div></div>
-        <div id="sugg"></div>
-        <div class="row"><input id="q" placeholder="Ask about your money…" style="flex:1;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--bg)"><button class="primary" id="send">Send</button></div>
+<div class="page-container">
+
+  <!-- HERO SECTION -->
+  <section class="hero-section" id="hero">
+    <div class="hero-grid">
+      <div class="hero-left">
+        <h1 class="h1-hero">The future of<br>AI Finance.</h1>
+        <div class="hero-sub">
+          <p class="hero-sub-text">Banking of Tomorrow.</p>
+          <div class="avatar-stack">
+            <img src="/static/assets/1.png" alt="User 1" />
+            <img src="/static/assets/2.png" alt="User 2" />
+            <img src="/static/assets/3.png" alt="User 3" />
+            <img src="/static/assets/4.png" alt="User 4" />
+          </div>
+        </div>
+      </div>
+      <div class="hero-right">
+        <p class="lead-p">
+          We specialize in leveraging artificial intelligence to transform financial operations, statement analytics, and advisory.
+        </p>
+        <div class="hero-buttons">
+          <a href="#solutions-section" class="btn-white" id="heroUploadCta">
+            Sign Up
+            <span class="circle-arrow-black">></span>
+          </a>
+          <button class="btn-glass" id="heroSampleBtn">
+            Discover More
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-</main>
+  </section>
+
+  <!-- SOLUTIONS & LIVE FINANCIAL PLATFORM -->
+  <section class="site-section" id="solutions-section">
+    <div class="section-head">
+      <div class="kicker">SOLUTIONS</div>
+      <h2 class="h2-section">Revolutionize your financial workflows.</h2>
+      <p class="lead-p" style="max-width: 680px;">
+        Our AI solutions automate complex financial processes, reduce manual errors, and enhance strategic insights across your organization.
+      </p>
+    </div>
+
+    <!-- MAIN INTERACTIVE APP CARD -->
+    <div class="solutions-card" id="appCard">
+
+      <!-- Upload View -->
+      <section id="upload">
+        <div class="solutions-top-bar">
+          <div>
+            <span class="kicker" style="margin-bottom: 4px; display: block;">STEP 1 · STATEMENT INGESTION</span>
+            <h3 style="font-size: 20px; font-weight: 500; color: #fff;">Upload your bank statement</h3>
+          </div>
+          <div class="status-badge">
+            <span class="indicator"></span> In-Memory Encryption · Privacy First
+          </div>
+        </div>
+
+        <div id="drop" class="dropzone">
+          <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 16.5V3m0 0l-4 4m4-4l4 4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M20 16.5v2a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 18.5v-2" stroke-linecap="round"/>
+          </svg>
+          <div class="dropzone-title">Drop your CSV, XLSX or PDF here, or click to choose</div>
+          <div class="dropzone-sub">Supports HDFC, SBI, ICICI, Axis, Kotak, standard bank formats up to 10 MB</div>
+          <input id="file" type="file" accept=".csv,.xlsx,.xls,.pdf" hidden />
+        </div>
+
+        <div class="form-row">
+          <input id="pw" type="password" class="input-dark" placeholder="PDF Password (if statement is locked)" style="flex: 1; min-width: 260px;" />
+        </div>
+
+        <div id="mapBox" style="display:none; margin-top: 18px; padding: 18px; background: rgba(255,255,255,0.03); border-radius: 10px; border: 1px solid var(--border-subtle);">
+          <p style="font-size: 13px; color: var(--accent-cyan); margin-bottom: 12px;">We couldn't detect the columns automatically. Please map them:</p>
+          <div class="form-row">
+            <label style="font-size: 12px; color: var(--text-muted);">Date <select id="mDate" class="select-dark"></select></label>
+            <label style="font-size: 12px; color: var(--text-muted);">Description <select id="mNarr" class="select-dark"></select></label>
+            <label style="font-size: 12px; color: var(--text-muted);">Amount <select id="mAmt" class="select-dark"></select></label>
+            <button class="btn-white" id="mapGo" style="padding: 8px 16px; font-size: 13px;">Continue</button>
+          </div>
+        </div>
+
+        <div class="form-row" style="margin-top: 24px;">
+          <button class="btn-white" id="sampleBtn">
+            Try sample statement
+            <span class="circle-arrow-black">></span>
+          </button>
+          <button class="btn-glass" id="samplePdf">
+            Try sample PDF (password-protected)
+          </button>
+        </div>
+
+        <p class="privacy-notice">
+          🔒 <strong>Privacy Guarantee:</strong> Your statement is processed in memory only and never saved on disk. Personal identifiers (names, phone numbers, account digits) are automatically masked before any AI sees them. Compliant with India's DPDP Act. Kharcha provides budgeting intelligence, not SEBI-registered securities advice.
+        </p>
+        <div id="upErr" class="error-banner"></div>
+      </section>
+
+      <!-- Dashboard View (Shown after upload or sample selection) -->
+      <main id="app">
+        <div class="solutions-top-bar">
+          <div>
+            <span class="kicker" style="margin-bottom: 4px; display: block;">FINANCIAL DASHBOARD</span>
+            <h3 style="font-size: 20px; font-weight: 500; color: #fff;">Deterministic Insights & Advisor</h3>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <button id="printBtn" class="btn-glass noprint" style="display:none; padding: 8px 16px; font-size: 12px;">
+              Download report
+            </button>
+            <button id="delBtn" class="btn-glass noprint" style="display:none; padding: 8px 16px; font-size: 12px; border-color: rgba(248,113,113,0.3); color: var(--accent-coral);">
+              Delete my data
+            </button>
+          </div>
+        </div>
+
+        <!-- Mobile Navigation Tabs -->
+        <div class="form-row tabs" style="display: none; margin-bottom: 16px;">
+          <button id="tDash" class="btn-white" style="padding: 8px 18px; font-size: 12px;">Dashboard</button>
+          <button id="tChat" class="btn-glass" style="padding: 8px 18px; font-size: 12px;">Advisor Chat</button>
+        </div>
+
+        <div class="app-grid">
+          <!-- Left Column: Metrics, Charts, Tools, Tables -->
+          <div id="dashcol">
+            <!-- 4 KPI Tiles -->
+            <div class="kpis-grid" id="kpis"></div>
+
+            <!-- Spending Charts -->
+            <div class="dash-card">
+              <h3>Where the money went</h3>
+              <div class="charts-row">
+                <div class="chart-box"><canvas id="donut"></canvas></div>
+                <div class="chart-box"><canvas id="trend"></canvas></div>
+              </div>
+            </div>
+
+            <!-- 50 / 30 / 20 Check -->
+            <div class="dash-card">
+              <h3>50 / 30 / 20 Rule Check</h3>
+              <div class="rule-bar" id="rule"></div>
+              <div class="rule-note" id="ruleNote"></div>
+            </div>
+
+            <!-- Saving Tips -->
+            <div class="dash-card">
+              <h3>Intelligent Saving Tips</h3>
+              <div id="tips"></div>
+            </div>
+
+            <!-- What-if Simulator -->
+            <div class="dash-card noprint">
+              <h3>What if I cut…</h3>
+              <div id="whatif"></div>
+              <div id="whatifOut" class="sim-output"></div>
+            </div>
+
+            <!-- Goal Planner -->
+            <div class="dash-card noprint">
+              <h3>Goal Planner</h3>
+              <div class="form-row" style="margin-top: 0;">
+                <span style="font-size: 14px; color: var(--text-muted);">I want ₹</span>
+                <input id="gAmt" type="number" value="90000" class="input-dark" style="width: 120px; padding: 8px 12px;" />
+                <span style="font-size: 14px; color: var(--text-muted);">in</span>
+                <input id="gMon" type="number" value="6" class="input-dark" style="width: 60px; padding: 8px 12px;" />
+                <span style="font-size: 14px; color: var(--text-muted);">months</span>
+                <button id="gGo" class="btn-white" style="padding: 8px 16px; font-size: 12px;">Plan</button>
+              </div>
+              <div id="gOut" style="margin-top: 14px; font-size: 13px; line-height: 1.6; color: var(--text-main);"></div>
+            </div>
+
+            <!-- Transactions Table -->
+            <div class="dash-card">
+              <h3>Recent Transactions</h3>
+              <div id="txwrap" class="table-scroll">
+                <table id="tx" class="tx-table"></table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Interactive AI Advisor -->
+          <div id="chatcol">
+            <div class="chat-container" id="chat">
+              <div class="chat-header">
+                <div class="chat-header-title">
+                  <span class="pulse"></span>
+                  Kharcha AI Advisor
+                </div>
+                <span style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em;">Deterministic Grounding</span>
+              </div>
+
+              <div id="msgs" class="chat-messages">
+                <div class="chat-msg assistant">
+                  Hi! I'm Kharcha, your personal finance coach. Ask me about your spending patterns, subscriptions, or how to save more. Every figure I provide is verified directly from your statement data.
+                </div>
+              </div>
+
+              <!-- Suggested prompt pills -->
+              <div id="sugg" class="chips-wrapper"></div>
+
+              <!-- Chat Input -->
+              <div class="chat-input-row">
+                <input id="q" type="text" class="input-dark" placeholder="Ask about your finances…" style="flex: 1;" />
+                <button class="btn-white" id="send" style="padding: 11px 20px;">
+                  Send
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+    </div>
+  </section>
+
+  <!-- OUR PARTNERS SECTION -->
+  <section class="site-section" id="partners-section">
+    <div class="section-head">
+      <div class="kicker">OUR PARTNERS</div>
+      <h2 class="h2-section">Trusted by leading financial institutions.</h2>
+    </div>
+    <div class="partners-grid">
+      <div class="partner-card"><img src="/static/assets/div-framer-1lv732o-4.svg" alt="Partner 1" /></div>
+      <div class="partner-card"><img src="/static/assets/div-framer-1lv732o-.svg" alt="Partner 2" /></div>
+      <div class="partner-card"><img src="/static/assets/prada-logo-1.svg" alt="Partner 3" /></div>
+      <div class="partner-card"><img src="/static/assets/div-framer-1lv732o-2.svg" alt="Partner 4" /></div>
+      <div class="partner-card"><img src="/static/assets/disney-wordmark-1.svg" alt="Partner 5" /></div>
+      <div class="partner-card"><img src="/static/assets/div-framer-1lv732o-3.svg" alt="Partner 6" /></div>
+      <div class="partner-card"><img src="/static/assets/div-framer-1lv732o-5.svg" alt="Partner 7" /></div>
+      <div class="partner-card"><img src="/static/assets/div-framer-1lv732o-5.svg" alt="Partner 8" /></div>
+    </div>
+  </section>
+
+  <!-- FEATURES SECTION -->
+  <section class="site-section" id="features-section">
+    <div class="section-head center">
+      <div class="kicker">FEATURES</div>
+      <h2 class="h2-section">The future of finance is here.</h2>
+      <p class="lead-p">We provide cutting-edge AI tools to optimize your financial performance.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-img-wrap">
+          <img src="/static/assets/chatgpt-image-jun-10-2026-01-14-34-pm.webp" alt="Predictive Analytics" />
+        </div>
+        <div class="feature-content">
+          <h3>Predictive Analytics</h3>
+          <p>Gain foresight into spending patterns, seasonal spikes, and cash flow trends.</p>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-img-wrap">
+          <img src="/static/assets/chatgpt-image-jun-10-2026-01-35-56-pm.webp" alt="Automated Compliance" />
+        </div>
+        <div class="feature-content">
+          <h3>Automated Compliance</h3>
+          <p>Ensure regulatory adherence under DPDP guidelines with strict in-memory execution.</p>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-img-wrap">
+          <img src="/static/assets/chatgpt-image-jun-10-2026-01-19-56-pm.webp" alt="Fraud & Leak Detection" />
+        </div>
+        <div class="feature-content">
+          <h3>Fraud & Leak Detection</h3>
+          <p>Detect hidden recurring subscriptions, fee spikes, and anomalous debits proactively.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KEY FEATURES SHOWCASE -->
+  <section class="site-section" id="key-features">
+    <div class="section-head">
+      <div class="kicker">ABOUT OUR SOLUTIONS</div>
+      <h2 class="h2-section">Key Features</h2>
+      <p class="lead-p">Explore the core capabilities that drive financial innovation and efficiency.</p>
+    </div>
+    <div class="key-features-list">
+      <div class="key-feature-item">
+        <div class="key-feature-content">
+          <div class="kicker">FEATURE 1</div>
+          <h1>Optimize financial forecasting.</h1>
+          <p class="lead-p">
+            Our AI models provide accurate predictions and deterministic computations, helping you make informed decisions and strategize for future growth.
+          </p>
+          <div>
+            <a href="#solutions-section" class="btn-white">
+              Try Interactive Demo
+              <span class="circle-arrow-black">></span>
+            </a>
+          </div>
+        </div>
+        <div class="key-feature-media">
+          <span class="key-feature-num">01</span>
+          <img src="/static/assets/chatgpt-image-jun-10-2026-01-39-51-pm.webp" alt="Forecasting" />
+        </div>
+      </div>
+
+      <div class="key-feature-item reverse">
+        <div class="key-feature-media">
+          <span class="key-feature-num">02</span>
+          <img src="/static/assets/chatgpt-image-jun-10-2026-01-37-17-pm.webp" alt="Risk Management" />
+        </div>
+        <div class="key-feature-content">
+          <div class="kicker">FEATURE 2</div>
+          <h1>Streamline risk management.</h1>
+          <p class="lead-p">
+            Automate budget assessments, identify spend anomalies, and prevent balance depletion before it impacts financial stability.
+          </p>
+          <div>
+            <a href="#solutions-section" class="btn-white">
+              Try Interactive Demo
+              <span class="circle-arrow-black">></span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="key-feature-item">
+        <div class="key-feature-content">
+          <div class="kicker">FEATURE 3</div>
+          <h1>Enhance customer insights.</h1>
+          <p class="lead-p">
+            Leverage AI to understand spending habits across 50/30/20 buckets and personalize advisory solutions effectively.
+          </p>
+          <div>
+            <a href="#solutions-section" class="btn-white">
+              Try Interactive Demo
+              <span class="circle-arrow-black">></span>
+            </a>
+          </div>
+        </div>
+        <div class="key-feature-media">
+          <span class="key-feature-num">03</span>
+          <img src="/static/assets/chatgpt-image-jun-10-2026-01-18-15-pm.webp" alt="Customer Insights" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES SECTION -->
+  <section class="site-section" id="services-section">
+    <div class="section-head center">
+      <div class="kicker">SERVICES</div>
+      <h2 class="h2-section">Tailored for every financial need.</h2>
+      <p class="lead-p">Our AI solutions are designed to cater to diverse financial sectors and business sizes.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card">
+        <img class="service-icon" src="/static/assets/saas-vector-1-1.png" alt="Banking" />
+        <div>
+          <h2>Banking & Lending</h2>
+          <p>AI-driven tools to analyze statements, verify borrower cashflow, and accelerate risk underwriting.</p>
+        </div>
+      </div>
+      <div class="service-card">
+        <img class="service-icon" src="/static/assets/group.png" alt="Investment" />
+        <div>
+          <h2>Investment Firms</h2>
+          <p>Advanced transaction trend analytics, net saving benchmarks, and disciplined cash allocation models.</p>
+        </div>
+      </div>
+      <div class="service-card">
+        <div style="width: 44px; height: 44px; margin-bottom: 24px; border-radius: 8px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div>
+          <h2>Financial Consulting</h2>
+          <p>Empower advisors with deterministic tool execution and verified numbers for client consultation.</p>
+        </div>
+      </div>
+      <div class="service-card">
+        <img class="service-icon" src="/static/assets/frame.png" alt="Enterprises" />
+        <div>
+          <h2>Enterprises</h2>
+          <p>Scalable statement parsing solutions that adapt to diverse statement layouts and high data volume.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BENEFITS & STATS -->
+  <section class="site-section" id="benefits-section">
+    <div class="benefits-container">
+      <div>
+        <div class="kicker">BENEFITS</div>
+        <h2 class="h2-section" style="margin-bottom: 20px;">
+          Smart. Secure. Scalable.<br>Welcome to AI Finance.
+        </h2>
+        <p class="lead-p" style="max-width: 440px;">
+          Engineered for privacy, deterministic precision, and instant speed across banking statements.
+        </p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-tile">
+          <h1>+48%</h1>
+          <h4>Efficiency Boost</h4>
+        </div>
+        <div class="stat-tile">
+          <h1>-21%</h1>
+          <h4>Risk Reduction</h4>
+        </div>
+        <div class="stat-tile">
+          <h1>10K%</h1>
+          <h4>Client Satisfaction</h4>
+        </div>
+        <div class="stat-tile">
+          <h1>21%</h1>
+          <h4>Innovation Growth</h4>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="site-section" id="testimonials-section">
+    <div class="section-head">
+      <div class="kicker">TESTIMONIALS</div>
+      <h2 class="h2-section">What our clients say.</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <p class="test-quote">“AI Finance has transformed our operations, bringing unparalleled efficiency and insight to our statement analysis.”</p>
+        <div class="test-author">
+          <img src="/static/assets/image-1927.png" alt="Jane Doe" />
+          <div>
+            <h4>Jane Doe</h4>
+            <p>CFO, Global Bank</p>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <p class="test-quote">“We've seen significant improvements in our savings strategies and risk management since partnering with AI Finance.”</p>
+        <div class="test-author">
+          <img src="/static/assets/image-1928.png" alt="Celine Smith" />
+          <div>
+            <h4>Celine Smith</h4>
+            <p>CEO, InvestCorp</p>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <p class="test-quote">“Their AI solutions are practical, data-driven, and immediately actionable for our consulting needs.”</p>
+        <div class="test-author">
+          <img src="/static/assets/image-1929.png" alt="Mike Jones" />
+          <div>
+            <h4>Mike Jones</h4>
+            <p>Analyst, FinConsult</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING SECTION -->
+  <section class="site-section" id="pricing-section">
+    <div class="section-head center">
+      <div class="kicker">PRICING</div>
+      <h2 class="h2-section">Plans for every scale.</h2>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div>
+          <h3>Starter</h3>
+          <p class="lead-p" style="font-size: 14px; margin-bottom: 20px;">Perfect for individual users & small teams exploring AI finance.</p>
+          <div class="price">$199<span>/mo</span></div>
+          <ul class="pricing-features">
+            <li><img src="/static/assets/volume-base-blk.svg" alt="check" /> Up to 2 users</li>
+            <li><img src="/static/assets/volume-base-blk.svg" alt="check" /> Basic analytics access</li>
+            <li><img src="/static/assets/volume-base-blk.svg" alt="check" /> Core AI tools</li>
+            <li><img src="/static/assets/volume-base-blk.svg" alt="check" /> Standard support</li>
+          </ul>
+        </div>
+        <a href="#solutions-section" class="btn-glass" style="justify-content: center;">Sign Up</a>
+      </div>
+
+      <div class="pricing-card featured">
+        <div>
+          <div class="kicker" style="color: var(--accent-cyan);">MOST POPULAR</div>
+          <h3>Professional</h3>
+          <p class="lead-p" style="font-size: 14px; margin-bottom: 20px;">Ideal for growing financial teams & active advisors.</p>
+          <div class="price">$499<span>/mo</span></div>
+          <ul class="pricing-features">
+            <li><img src="/static/assets/volume-base-blk.svg" alt="check" /> Up to 10 users</li>
+            <li><img src="/static/assets/volume-base-blk.svg" alt="check" /> Advanced analytics access</li>
+            <li><img src="/static/assets/volume-base-blk.svg" alt="check" /> Enhanced AI features</li>
+            <li><img src="/static/assets/volume-base-blk.svg" alt="check" /> Priority support</li>
+          </ul>
+        </div>
+        <a href="#solutions-section" class="btn-white" style="justify-content: center;">
+          Contact Sales
+          <span class="circle-arrow-black">></span>
+        </a>
+      </div>
+
+      <div class="pricing-card">
+        <div>
+          <h3>Enterprise</h3>
+          <p class="lead-p" style="font-size: 14px; margin-bottom: 20px;">Best for large organizations with complex institutional needs.</p>
+          <div class="price">$899<span>/mo</span></div>
+          <ul class="pricing-features">
+            <li><img src="/static/assets/volume-base-blk.svg" alt="check" /> Unlimited Users</li>
+            <li><img src="/static/assets/volume-base-blk.svg" alt="check" /> Comprehensive analytics</li>
+            <li><img src="/static/assets/volume-base-blk.svg" alt="check" /> Custom AI solutions</li>
+            <li><img src="/static/assets/volume-base-blk.svg" alt="check" /> Dedicated support</li>
+          </ul>
+        </div>
+        <a href="#solutions-section" class="btn-glass" style="justify-content: center;">Contact Sales</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-hero">
+      <h1 class="h1-hero" style="font-size: 48px;">
+        Grow with AI Finance.<br>Start your journey today.
+      </h1>
+      <div class="hero-buttons" style="margin-top: 24px;">
+        <a href="#solutions-section" class="btn-white">
+          Get Started
+          <span class="circle-arrow-black">></span>
+        </a>
+        <a href="#features-section" class="btn-glass">Learn More</a>
+      </div>
+    </div>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h2>AI Finance</h2>
+        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">contact@ai-finance.com</p>
+        <p style="font-size: 12px; color: var(--text-dim);">© 2026 AI Finance Inc. All rights reserved.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Menu</h4>
+        <ul>
+          <li><a href="#solutions-section">Solutions</a></li>
+          <li><a href="#features-section">Features</a></li>
+          <li><a href="#services-section">Services</a></li>
+          <li><a href="#pricing-section">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="#">LinkedIn</a></li>
+          <li><a href="#">Twitter</a></li>
+          <li><a href="#">Facebook</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="/static/app.js"></script>
 </body>
