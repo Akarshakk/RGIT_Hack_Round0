@@ -6,12 +6,12 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const SVGNS = "http://www.w3.org/2000/svg";
 
 const CAT_COLOR = {
-  "Rent": "#8c89ff", "EMI & Loans": "#b3b1ff", "Shopping": "#e5352b", "Food & Dining": "#f5b700", "Groceries": "#19a99b",
-  "Subscriptions": "#d81b7a", "Transport": "#ff7a1a", "Utilities & Bills": "#6fb7ff", "Cash Withdrawal": "#c9a7ff",
+  "Rent": "#7cc4ff", "EMI & Loans": "#f2e3c6", "Shopping": "#e5352b", "Food & Dining": "#f5b700", "Groceries": "#19a99b",
+  "Subscriptions": "#d81b7a", "Transport": "#ff7a1a", "Utilities & Bills": "#6fb7ff", "Cash Withdrawal": "#d1b48c",
   "Transfers": "#ff9f80", "Fees & Charges": "#ff5c5c", "Entertainment": "#f48fb1", "Health & Fitness": "#9be3c3",
-  "Education": "#ffd166", "Investments": "#9be3c3", "Income": "#9be3c3", "Other": "#b1aacd",
+  "Education": "#ffd166", "Investments": "#9be3c3", "Income": "#9be3c3", "Other": "#a3b8b2",
 };
-const color = (c) => CAT_COLOR[c] || "#b1aacd";
+const color = (c) => CAT_COLOR[c] || "#a3b8b2";
 
 let categories = [], story = null, aiQuips = {}, data = null, txAll = [], txFilter = null, lastFile = null;
 

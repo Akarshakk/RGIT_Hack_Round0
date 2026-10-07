@@ -1,12 +1,12 @@
 // Credence Wrapped: story player. Cards come from GET /wrapped; AI quips (POST /wrapped/ai) replace the templates when they arrive.
 window.Wrapped = (() => {
-  const LOGO = `<svg viewBox="0 0 100 100"><path d="M75.27 72.75A34 34 0 0 1 41.63 82.95" stroke="#F5B700" stroke-width="15" fill="none"/><path d="M36.58 81.24A34 34 0 0 1 16.10 52.67" stroke="#E5352B" stroke-width="15" fill="none"/><path d="M16.10 47.33A34 34 0 0 1 36.58 18.76" stroke="#D81B7A" stroke-width="15" fill="none"/><path d="M41.63 17.05A34 34 0 0 1 75.27 27.25" stroke="#4B48D6" stroke-width="15" fill="none"/><circle cx="80" cy="50" r="7.5" fill="#9BE3C3"/></svg>`;
+  const LOGO = `<svg viewBox="0 0 100 100"><path d="M75.27 72.75A34 34 0 0 1 41.63 82.95" stroke="#F5B700" stroke-width="15" fill="none"/><path d="M36.58 81.24A34 34 0 0 1 16.10 52.67" stroke="#E5352B" stroke-width="15" fill="none"/><path d="M16.10 47.33A34 34 0 0 1 36.58 18.76" stroke="#D81B7A" stroke-width="15" fill="none"/><path d="M41.63 17.05A34 34 0 0 1 75.27 27.25" stroke="#3FA0FF" stroke-width="15" fill="none"/><circle cx="80" cy="50" r="7.5" fill="#9BE3C3"/></svg>`;
   const DUR = 7000;
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const inr = (n) => "₹" + Math.round(n).toLocaleString("en-IN");
   const $ = (id) => document.getElementById(id);
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const LIGHT = new Set(["turmeric", "cream", "saffron"]);
+  const LIGHT = new Set(["turmeric", "cream", "saffron", "sky"]);
 
   let cards = [], els = [], idx = 0, mode = "roast", start = 0, elapsed = 0, paused = false, raf = null, onClose = null, ai = {};
 

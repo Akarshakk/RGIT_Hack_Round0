@@ -91,7 +91,7 @@ def build(df):
                                       else f"You worked {pl(R(hours), 'hour')} so you'd never have to cook."),
                             "hype": f"Win back half of that and you've earned {R(hours / 2)} hours of your life back."},
                            receipt=f"{inr(income_m)}/month income ÷ {HOURS_PER_MONTH} working hours · {int(food.merchant.isin(fm.index).sum())} rows",
-                           viz={"type": "days", "days": days}, theme="peacock", facts={"days": days, "half": R(hours / 2)}))
+                           viz={"type": "days", "days": days}, theme="sky", facts={"days": days, "half": R(hours / 2)}))
 
     # 4. personality
     cards.append(_personality(df, sp, insights, n))
