@@ -11,8 +11,8 @@ import pandas as pd
 SYN = {
     "date": {"date", "txn date", "transaction date", "tran date", "posting date", "value dt", "value date"},
     "narration": {"narration", "description", "particulars", "remarks", "details", "transaction remarks"},
-    "debit": {"withdrawal", "withdrawal amt", "debit", "debit amount", "dr", "withdrawals"},
-    "credit": {"deposit", "deposit amt", "credit", "credit amount", "cr", "deposits"},
+    "debit": {"withdrawal", "withdrawal amt", "withdrawal amount", "debit", "debit amount", "dr", "withdrawals"},
+    "credit": {"deposit", "deposit amt", "deposit amount", "credit", "credit amount", "cr", "deposits"},
     "amount": {"amount", "txn amount", "transaction amount"},
     "flag": {"dr/cr", "cr/dr", "type", "txn type", "debit/credit"},
     "balance": {"balance", "closing balance", "running balance", "available balance"},
@@ -29,7 +29,9 @@ class NeedsMapping(Exception):
 
 
 def _norm(c):
-    return re.sub(r"\s+", " ", str(c or "")).strip().lower().rstrip(".")
+    """'Withdrawal Amount (INR )' -> 'withdrawal amount': drop currency notes in brackets and trailing dots."""
+    c = re.sub(r"\((?:inr|rs\.?|₹)?\s*\)|\b(?:in )?(?:inr|rs)\b\.?", " ", str(c or ""), flags=re.I)
+    return re.sub(r"\s+", " ", c).strip().lower().rstrip(".")
 
 
 def _read_rows(data, name, password):

@@ -1,6 +1,6 @@
-# Kharcha — AI personal finance advisor for Indian bank statements
+# Credence — your bank statement, told like a story
 
-Upload a bank statement (CSV, XLSX or password-protected PDF), see where the money goes, get saving tips in ₹, and chat with an advisor whose numbers always come from code, not from the model (LLM: Groq).
+Upload a bank statement (CSV, XLSX or password-protected PDF), watch your money Wrapped (roast or hype mode), see where the money goes, get saving tips in ₹, and chat with an advisor whose numbers always come from code, not from the model (LLM: Groq).
 
 ## Quickstart
 ```bash

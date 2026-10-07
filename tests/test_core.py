@@ -169,6 +169,40 @@ def test_all_tool_outputs_json_serializable():
         json.dumps(run_tool(df, t["function"]["name"], {k: args[k] for k in t["function"]["parameters"]["properties"]}))
 
 
+def test_wrapped_story_matches_ground_truth():
+    from app import wrapped as wr
+    st = wr.build(_df())
+    cards = {c["id"]: c for c in st["cards"]}
+    assert list(cards) == ["intro", "picture", "top", "hours", "persona", "peak", "subs", "friends", "outro"]
+    assert cards["top"]["big"] == "Zomato" and "33 payments" in cards["top"]["sub"]
+    assert cards["persona"]["big"] == "The Weekend Foodie"
+    assert cards["peak"]["big"] == "August." and "₹18,999" in cards["peak"]["sub"]
+    assert cards["subs"]["big"] == "₹5,996"  # cultfit 1,499 x 4
+    assert cards["friends"]["big"] == "₹9,507" == "₹{:,}".format(TRUTH["spend_by_category"]["Transfers"])
+    assert cards["outro"]["big"] == "₹3,394" and cards["outro"]["viz"]["year"] == 3394 * 12
+    json.dumps(st)
+
+
+def test_wrapped_ai_quips_reject_invented_numbers():
+    from app import wrapped as wr
+    st = wr.build(_df())
+    reply = {"cards": {"top": {"roast": "33 orders. Zomato knows your gate code.", "hype": "You saved ₹99,999 on Zomato!"},
+                       "intro": {"roast": "Chalo, dekhte hain.", "hype": "Let's go."}}}
+    msg = SimpleNamespace(content=json.dumps(reply))
+    client = SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=lambda **kw: SimpleNamespace(choices=[SimpleNamespace(message=msg)]))))
+    got = wr.ai_quips(st, client=client)
+    assert got["top"] == {"roast": "33 orders. Zomato knows your gate code."}  # ₹99,999 is not on the card -> dropped
+    assert got["intro"] == {"roast": "Chalo, dekhte hain.", "hype": "Let's go."}
+
+
+def test_icici_style_headers():
+    csv_text = ("ICICI Bank Limited\nS No.,Value Date,Transaction Date,Cheque Number,Transaction Remarks,Withdrawal Amount (INR ),Deposit Amount (INR ),Balance (INR )\n"
+                '1,01/08/2026,01/08/2026,,NEFT-INFOSYS LTD-SALARY AUG,,"82,000.00","1,02,000.00"\n'
+                '2,02/08/2026,02/08/2026,,UPI-zomato@icici-ZOMATO-Order,"420.00",,"1,01,580.00"\n')
+    df = load_statement(csv_text.encode(), "icici.csv")
+    assert list(df.amount) == [82000.0, -420.0] and df.balance.iloc[-1] == 101580.0
+
+
 if __name__ == "__main__":
     for k, v in list(globals().items()):
         if k.startswith("test_"):

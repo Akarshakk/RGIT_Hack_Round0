@@ -15,11 +15,12 @@ from app import analytics as an  # noqa: E402
 from app.categorize import BUCKET, CATEGORIES, categorize, recategorize  # noqa: E402
 from app.chat import stream_chat  # noqa: E402
 from app.ingest import NeedsMapping, load_statement  # noqa: E402
+from app import wrapped as wr  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 MAX_BYTES, MAX_ROWS, TTL = 10 * 1024 * 1024, 20000, 30 * 60
 SESSIONS = {}
-app = FastAPI(title="Kharcha")
+app = FastAPI(title="Credence")
 
 
 def _session(sid):
@@ -81,8 +82,14 @@ def sample(response: Response, kind: str = "csv"):
 def overview(period: str | None = None, sid: str | None = Cookie(None)):
     df = _session(sid)["df"]
     return dict(overview=an.get_overview(df, period), categories=an.category_breakdown(df, period),
-                buckets=_buckets(df, period), trend=an.monthly_trend(df),
+                buckets=_buckets(df, period), trend=an.monthly_trend(df), trend_buckets=_trend_buckets(df),
                 insights=an.generate_insights(df))
+
+
+def _trend_buckets(df):
+    d = an._spend(df)
+    g = d.groupby([d["date"].dt.strftime("%Y-%m"), "bucket"]).amount.sum().unstack(fill_value=0)
+    return {m: {b: an.R(-r.get(b, 0)) for b in ("Need", "Want", "Transfer")} for m, r in g.iterrows()}
 
 
 def _buckets(df, period):
@@ -120,6 +127,21 @@ def simulate(changes: list[dict] = Body(..., embed=True), sid: str | None = Cook
 @app.post("/goal")
 def goal(target: float = Body(..., embed=True), months: int = Body(..., embed=True), sid: str | None = Cookie(None)):
     return an.plan_goal(_session(sid)["df"], target, max(1, months))
+
+
+@app.get("/wrapped")
+def wrapped(sid: str | None = Cookie(None)):
+    s = _session(sid)
+    s["story"] = wr.build(s["df"])
+    return s["story"]
+
+
+@app.post("/wrapped/ai")
+def wrapped_ai(sid: str | None = Cookie(None)):
+    """LLM-written quips for the story; each one is dropped unless every number in it is already on its card."""
+    s = _session(sid)
+    story = s.get("story") or wr.build(s["df"])
+    return dict(quips=wr.ai_quips(story))
 
 
 @app.post("/chat")

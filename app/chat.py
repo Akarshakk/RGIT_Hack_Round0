@@ -9,7 +9,7 @@ from app.categorize import CATEGORIES
 MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
 MAX_TURNS = 8
 
-SYSTEM = """You are Kharcha, a friendly Indian personal-finance coach. You help the user understand their own bank statement and save money.
+SYSTEM = """You are Credence, a friendly Indian personal-finance coach. You help the user understand their own bank statement and save money.
 
 Rules:
 - Reply in the user's language: English, or Hinglish if they write in Hinglish.
