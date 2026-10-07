@@ -12,7 +12,7 @@ BUCKET = {
 }
 CATEGORIES = list(BUCKET)
 MERCHANTS = json.loads((Path(__file__).parent / "merchants.json").read_text())
-MODEL = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
+MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
 
 RAILS = ["UPI", "NEFT", "IMPS", "RTGS", "NACH", "ECS", "ACH", "ATM", "POS", "CLG", "CHARGES", "CHG"]
 VPA = re.compile(r"([A-Za-z0-9._]+)@([A-Za-z0-9]+)")

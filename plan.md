@@ -34,10 +34,10 @@ requirements.txt, .env.example, README.md
 | P1 | Ingestion (CSV/XLSX/PDF → normalized table) | ☑ |
 | P2 | Categorization (rules + UPI parsing + LLM fallback) | ☑ (LLM tier unverified: no API key) |
 | P3 | Analytics engine + saving-tip generators | ☑ |
-| P4 | Chat agent (Claude tool use, streaming, guardrails, redaction) | ☑ (live-model parts unverified: no API key) |
-| P5 | Web UI (upload → dashboard → chat → tips) | ☑ (live-model parts unverified: no API key) |
-| P6 | Differentiators (what-if simulator, Hinglish, report export) + eval | ☑ (live-model parts unverified: no API key) |
-| P7 | Hardening, deploy, demo script, final presentation material | ☑ (live-model parts unverified: no API key) |
+| P4 | Chat agent (Claude tool use, streaming, guardrails, redaction) | ☑ (verified on Groq) |
+| P5 | Web UI (upload → dashboard → chat → tips) | ☑ (verified on Groq) |
+| P6 | Differentiators (what-if simulator, Hinglish, report export) + eval | ☑ (verified on Groq) |
+| P7 | Hardening, deploy, demo script, final presentation material | ☑ (verified on Groq) |
 
 The schedule is ordered by dependencies. P0–P3 work with **no API key**. P4 is the first phase that needs `ANTHROPIC_API_KEY`. If time runs short, **cut P6 first**: P0–P5 on their own make a complete demo.
 
