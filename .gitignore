@@ -6,6 +6,5 @@ __pycache__
 .env*
 !.env.example
 demo_video/
-video/frames/
-video/vo/
-video/*.wav
+images/
+video/
