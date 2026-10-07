@@ -75,7 +75,7 @@ async def upload(response: Response, file: UploadFile = File(...), password: str
 
 @app.post("/sample")
 def sample(response: Response, kind: str = "csv"):
-    name, pw = ("statement.pdf", "kharcha123") if kind == "pdf" else ("hdfc_style.csv", None)
+    name, pw = {"pdf": ("statement.pdf", "kharcha123"), "axis": ("axis_style_bengaluru.csv", None)}.get(kind, ("hdfc_style.csv", None))
     return _ingest(response, (ROOT / "data" / "samples" / name).read_bytes(), name, pw, None)
 
 

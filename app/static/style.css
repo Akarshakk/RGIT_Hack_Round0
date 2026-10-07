@@ -523,3 +523,6 @@ pre.rbox { flex-basis: 100%; background: var(--ink); border: 1px solid var(--lin
 .frame.light .cta { border-color: var(--ink); color: var(--ink); }
 .frame.light .cta.primary { background: var(--ink); border-color: var(--ink); color: var(--cream); }
 .c-receipt.plain::before { content: none; }
+.alt-sample { font-size: 15px; color: var(--muted); margin: -8px 0 18px; }
+.linkish { background: none; border: 0; padding: 0; color: var(--turmeric); font: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.linkish:hover { color: var(--cream); }

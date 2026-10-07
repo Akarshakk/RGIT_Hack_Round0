@@ -74,7 +74,8 @@ TOOLS = [
     _tool("top_merchants", "Top merchants by spend, optionally within one category.",
           {"period": PERIOD, "category": {"type": ["string", "null"], "enum": CATEGORIES + [None]}, "n": {"type": "integer"}}),
     _tool("monthly_trend", "Monthly spend, optionally for one category.", {"category": {"type": ["string", "null"], "enum": CATEGORIES + [None]}}),
-    _tool("search_transactions", "Find individual transactions, e.g. fees and penalties (category 'Fees & Charges'), a merchant, or large payments.", {
+    _tool("search_transactions", "Find transactions by merchant or text (e.g. 'uber'), category (fees and penalties are 'Fees & Charges') or size. "
+          "Returns match_count and total_spent over ALL matches plus up to `limit` example rows: quote the totals, never add rows up.", {
         "query": STR("text to match in merchant or narration"), "category": {"type": ["string", "null"], "enum": CATEGORIES + [None]},
         "min_amount": {"type": ["number", "null"]}, "period": PERIOD, "limit": {"type": "integer"}}),
     _tool("find_recurring", "Recurring payments and subscriptions with monthly cost, flagging ones to check for usage.", {}),
@@ -141,6 +142,17 @@ def spending_by_category(df, period=None, bucket=None):
 
 
 FUNCS["category_breakdown"] = spending_by_category
+
+
+def find_transactions(df, query=None, category=None, min_amount=None, period=None, limit=20):
+    """Chat view of search_transactions: totals over ALL matches, so the model never sums a truncated list."""
+    rows = an.search_transactions(df, query, category, min_amount, period, limit=100000)
+    out = [r["amount"] for r in rows]
+    return dict(match_count=len(rows), total_spent=an.R(-sum(a for a in out if a < 0)), total_received=an.R(sum(a for a in out if a > 0)),
+                showing=min(limit, len(rows)), rows=rows[:limit])
+
+
+FUNCS["search_transactions"] = find_transactions
 
 
 def run_tool(df, name, args):

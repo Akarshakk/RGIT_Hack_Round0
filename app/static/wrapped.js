@@ -13,7 +13,7 @@ window.Wrapped = (() => {
   const viz = {
     flow: (v) => `<div class="v-flow">
         <div><span>came in</span><div class="b"></div></div>
-        <div><span>went out · you kept ${inr(v.saved)}</span><div class="b out" style="--p:${(v.spend / v.income * 100).toFixed(1)}%"><div class="kept" style="width:${Math.max(0, v.saved / v.income * 100).toFixed(1)}%"></div></div></div>
+        <div><span>went out · ${v.saved < 0 ? `${inr(-v.saved)} more than came in` : `you kept ${inr(v.saved)}`}</span><div class="b out" style="--p:${(v.spend / v.income * 100).toFixed(1)}%"><div class="kept" style="width:${Math.max(0, v.saved / v.income * 100).toFixed(1)}%"></div></div></div>
       </div>`,
     tiles: (v) => {
       const total = v.items.reduce((s, i) => s + i.count, 0), scale = total > 66 ? 66 / total : 1;

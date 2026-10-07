@@ -40,6 +40,7 @@ window.addEventListener("drop", (e) => { e.preventDefault(); if (!$("landing").h
 
 $("sampleBtn").onclick = () => run(() => fetch("/sample?kind=csv", { method: "POST" }));
 $("samplePdf").onclick = () => run(() => fetch("/sample?kind=pdf", { method: "POST" }));
+$("sampleAxis").onclick = () => run(() => fetch("/sample?kind=axis", { method: "POST" }));
 $("mapGo").onclick = () => {
   const mapping = { date: $("mDate").value, narration: $("mNarr").value, amount: $("mAmt").value };
   run(() => fetch("/upload", { method: "POST", body: form(lastFile, mapping) }));

@@ -15,7 +15,7 @@ SYN = {
     "credit": {"deposit", "deposit amt", "deposit amount", "credit", "credit amount", "cr", "deposits"},
     "amount": {"amount", "txn amount", "transaction amount"},
     "flag": {"dr/cr", "cr/dr", "type", "txn type", "debit/credit"},
-    "balance": {"balance", "closing balance", "running balance", "available balance"},
+    "balance": {"balance", "closing balance", "running balance", "available balance", "bal"},
 }
 SUMMARY_ROW = re.compile(r"opening balance|closing balance|total|b/f|c/f", re.I)
 

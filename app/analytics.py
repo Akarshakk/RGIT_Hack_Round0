@@ -235,6 +235,12 @@ def quick_wins(df, target_monthly=None):
         wins.append((f"Drop {unused[0]['merchant'].title()} if you've stopped going", unused[0]["monthly_cost"]))
     if "avoidable_fees" in ins:
         wins.append(("Pay bills on time, no late fees", ins["avoidable_fees"]["monthly_saving_estimate"]))
+    over = ins.get("rule_50_30_20", {}).get("monthly_saving_estimate", 0)
+    if over > 0 and len(wins) < 3:  # wants above 30%: trim the biggest want that isn't already covered by a food win
+        taken = "Food & Dining" if any("food" in t.lower() for t, _ in wins) else None
+        big = next((c for c in category_breakdown(df, bucket="Want") if c["category"] not in (taken, "Subscriptions", "Other")), None)
+        if big:
+            wins.append((f"Trim {big['category']} by 20%", 0.2 * big["amount"] / _months(df)))
     if "category_spike" in ins and len(wins) < 3:
         wins.append((f"Bring {ins['category_spike']['evidence']['category']} back to normal", ins["category_spike"]["monthly_saving_estimate"]))
     wins = [dict(action=t, monthly_saving=R(v)) for t, v in wins if v > 0]

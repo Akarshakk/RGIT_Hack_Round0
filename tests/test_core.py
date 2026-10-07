@@ -220,6 +220,19 @@ def test_future_you_and_friend_ledger():
     assert an.quick_wins(df)["monthly_total"] == 3394
 
 
+def test_second_persona_is_data_driven():
+    """A different person, bank layout and set of habits: totals match the raw CSV and the story adapts."""
+    import csv
+    from app import wrapped as wr
+    raw = list(csv.reader((SAMPLES / "axis_style_bengaluru.csv").open()))[4:]
+    df = categorize(_load("axis_style_bengaluru.csv"), use_llm=False)
+    assert len(df) == len(raw) and round(-df.amount[df.amount < 0].sum()) == round(sum(float(r[3]) for r in raw if r[3]))
+    cards = {c["id"]: c for c in wr.build(df)["cards"]}
+    assert cards["top"]["big"] == "Uber" and cards["persona"]["big"] == "The Cart Champion"
+    assert "more than came in" in cards["picture"]["sub"] and cards["subs"]["eyebrow"] == "Your subscriptions"
+    assert an.friend_ledger(df)["received"] > 0 and "Zomato" not in json.dumps(cards)
+
+
 if __name__ == "__main__":
     for k, v in list(globals().items()):
         if k.startswith("test_"):

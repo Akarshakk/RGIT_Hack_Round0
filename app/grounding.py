@@ -5,7 +5,7 @@ Shared by the chat stream (the UI shows a "numbers verified" badge per answer) a
 import json
 import re
 
-_RUPEE = re.compile(r"(?:₹|rs\.?|inr)\s*(\d[\d,]*(?:\.\d+)?)", re.I)
+_RUPEE = re.compile(r"(?:₹|rs\.?|inr)\s*[-‑–−]?\s*(\d[\d,]*(?:\.\d+)?)", re.I)  # also "₹-3,889" / "₹‑3,889"
 _PCT = re.compile(r"(\d+(?:\.\d+)?)\s*%")
 _ANY = re.compile(r"-?\d[\d,]*(?:\.\d+)?")
 

@@ -12,7 +12,7 @@ from app import analytics as an
 R = an.R
 HOURS_PER_MONTH = 176  # 22 working days x 8 hours
 SKIP = {"Rent", "EMI & Loans", "Transfers", "Cash Withdrawal", "Income", "Investments", "Utilities & Bills", "Fees & Charges"}
-inr = lambda n: "₹" + _group(R(n))
+inr = lambda n: ("−₹" if R(n) < 0 else "₹") + _group(abs(R(n)))
 pl = lambda n, word: f"{n} {word}{'' if n == 1 else 's'}"
 
 
@@ -52,10 +52,15 @@ def build(df):
 
     # 1. big picture
     if ov["income"]:
-        cards.append(_card("picture", "The big picture", f"{inr(ov['income'])} in.\n{inr(ov['spend'])} out.",
-                           f"You kept {inr(ov['net_savings'])}" + (f", and put {inr(ov['invested'])} into investments." if ov["invested"] else "."),
-                           {"roast": f"You saved {ov['savings_rate_pct']}%. The target is 20%. " + ("So close, yet so you." if ov["savings_rate_pct"] < 20 else "Fine. You win this one."),
-                            "hype": f"You saved {ov['savings_rate_pct']}% of what came in. That's a habit forming."},
+        rate, kept, inv = ov["savings_rate_pct"], ov["net_savings"], ov["invested"]
+        over = kept < 0
+        sub = (f"You spent {inr(-kept)} more than came in" if over else f"You kept {inr(kept)}") + (f", and still put {inr(inv)} into investments." if inv and over else f", and put {inr(inv)} into investments." if inv else ".")
+        roast = ("You spent more than you earned. Bold strategy, yaar." if over else
+                 f"You saved {rate}%. The target is 20%. So close, yet so you." if rate < 20 else f"You saved {rate}%. Fine. You win this one.")
+        hype = (f"Your {inr(inv)} of investments kept going even in a tight stretch." if over and inv else
+                "A tight stretch. The next cards show exactly where to win it back." if over else f"You saved {rate}% of what came in. That's a habit forming.")
+        cards.append(_card("picture", "The big picture", f"{inr(ov['income'])} in.\n{inr(ov['spend'])} out.", sub,
+                           {"roast": roast, "hype": hype},
                            receipt=f"{int((df.category == 'Income').sum())} income credits · {int((df.amount < 0).sum())} debits",
                            viz={"type": "flow", "income": ov["income"], "spend": ov["spend"], "saved": ov["net_savings"]},
                            theme="turmeric", facts={"rate": ov["savings_rate_pct"]}))
@@ -118,17 +123,20 @@ def build(df):
     # 6. subscriptions
     subs = [r for r in an.find_recurring(df) if r["is_subscription"]]
     if subs:
-        flag = next((s for s in subs if s["possibly_unused"]), None) or subs[0]
+        ghost = next((s for s in subs if s["possibly_unused"]), None)
+        flag = ghost or subs[0]
         tot = sum(s["monthly_cost"] for s in subs)
-        cards.append(_card("subs", "The ghost subscription" if flag["possibly_unused"] else "Your subscriptions",
-                           inr(flag["monthly_cost"] * flag["count"]),
-                           f"paid to {flag['merchant'].title()} so far." + (f" Your {len(subs)} subscriptions cost {inr(tot)} a month." if len(subs) > 1 else ""),
-                           {"roast": f"Is your {flag['merchant'].title()} membership working out more than you are?" if flag["possibly_unused"]
+        paid_all = sum(s["monthly_cost"] * s["count"] for s in subs)
+        cards.append(_card("subs", "The ghost subscription" if ghost else "Your subscriptions",
+                           inr(ghost["monthly_cost"] * ghost["count"]) if ghost else inr(paid_all),
+                           (f"paid to {ghost['merchant'].title()} so far." + (f" Your {len(subs)} subscriptions cost {inr(tot)} a month." if len(subs) > 1 else ""))
+                           if ghost else f"paid to {pl(len(subs), 'subscription')} so far. That's {inr(tot)} every month.",
+                           {"roast": f"Is your {flag['merchant'].title()} membership working out more than you are?" if ghost
                                      else f"{len(subs)} subscriptions. You'd need a second life to use them all." if len(subs) >= 3
                                      else f"Just {pl(len(subs), 'subscription')}. Restraint. We're almost disappointed.",
                             "hype": f"If you still use {flag['merchant'].title()}, keep it. If not, that's {inr(flag['monthly_cost'])} back every month."},
                            receipt=f"{_mask(df.loc[flag['ids'][0], 'narration'])} · every ~30 days",
-                           viz={"type": "subs", "items": [{"m": s["merchant"], "v": s["monthly_cost"], "flag": s is flag} for s in subs], "total": tot},
+                           viz={"type": "subs", "items": [{"m": s["merchant"], "v": s["monthly_cost"], "flag": s is ghost} for s in subs], "total": tot},
                            theme="indigo"))
 
     # 7. friend ledger (P2P)
@@ -156,10 +164,12 @@ def build(df):
 
     # 9. future you: the same monthly amount, compounded at an illustrative rate
     if total:
+        food_top = sp[sp.category == "Food & Dining"].groupby("merchant").amount.sum().sort_values()
+        fav = food_top.index[0].title() if len(food_top) else None
         fy = an.future_you(df, total, years=10)
         cards.append(_card("future", f"Future you · {fy['by_year']}", inr(fy["final_value"]),
                            f"If those {inr(total)} a month went into savings for 10 years, at an illustrative {fy['illustrative_rate_pct']:g}% a year.",
-                           {"roast": "Future you is watching. Future you wants the Zomato money.",
+                           {"roast": f"Future you is watching. Future you wants the {fav} money." if fav else "Future you is watching. Future you wants that money back.",
                             "hype": "That's future you's head start, built from habits, not sacrifice."},
                            receipt="illustrative rate, not a forecast or investment advice",
                            viz={"type": "future", "series": fy["series"], "contributed": fy["contributed"], "growth": fy["growth"]},
@@ -172,7 +182,7 @@ def _personality(df, sp, insights, n):
     food, wants = sp[sp.category == "Food & Dining"], sp[sp.bucket == "Want"]
     wk = food[food.date.dt.weekday >= 5]
     share = R(100 * wk.amount.sum() / food.amount.sum()) if len(food) else 0
-    by_cat = (-wants.groupby("category").amount.sum()).sort_values(ascending=False)
+    by_cat = (-wants[wants.category != "Other"].groupby("category").amount.sum()).sort_values(ascending=False)  # "Other" says nothing about a habit
     if share >= 60 and len(food) >= 6:
         name, line, viz = "The Weekend Foodie", f"{share}% of your food spend lands on Saturday and Sunday.", {"type": "split", "weekday": 100 - share, "weekend": share}
         days = wk.groupby(wk.date.dt.date).size()
