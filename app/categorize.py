@@ -82,8 +82,8 @@ def _llm_categorize(items):
     if todo and os.environ.get("GROQ_API_KEY"):
         try:
             import groq
-            r = groq.Groq().chat.completions.create(
-                model=MODEL, temperature=0, response_format={"type": "json_object"}, messages=[
+            r = groq.Groq(max_retries=4).chat.completions.create(
+                model=MODEL, temperature=0, max_tokens=6000, reasoning_effort="low", response_format={"type": "json_object"}, messages=[
                     {"role": "system", "content": "You categorize Indian bank-statement transactions. Each item is a merchant key and one example "
                      "narration (personal data already masked). Allowed categories: " + json.dumps(CATEGORIES) + '. Reply with JSON '
                      '{"results": [{"merchant_key": str, "category": one allowed category, "confidence": 0-1}]} and nothing else.'},

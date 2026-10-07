@@ -117,7 +117,7 @@ def _create(client, groq, messages, tries=3):
         model = models[min(i, len(models) - 1)]
         try:
             return client.chat.completions.create(model=model, messages=messages, tools=TOOLS, tool_choice="auto", stream=True,
-                                                  max_tokens=2048, temperature=0.2, reasoning_effort="low")
+                                                  max_tokens=1000, temperature=0.2, reasoning_effort="low")
         except (getattr(groq, "RateLimitError", ()), getattr(groq, "InternalServerError", ()), getattr(groq, "APIConnectionError", ())):
             if i == tries - 1:
                 raise

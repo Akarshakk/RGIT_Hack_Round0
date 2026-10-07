@@ -139,7 +139,7 @@ main { position: relative; z-index: 1; }
 .map-row label { display: grid; gap: 4px; color: var(--muted); font-size: 13px; }
 .err { color: #ff8a80; font-weight: 600; min-height: 1.5em; }
 
-.peek { max-width: 1280px; margin: 0 auto; padding: 32px clamp(16px, 4vw, 48px) 96px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 96px); align-items: center; }
+.peek { overflow-x: clip; max-width: 1280px; margin: 0 auto; padding: 32px clamp(16px, 4vw, 48px) 96px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 96px); align-items: center; }
 .peek-cards { position: relative; height: 380px; }
 .mini { position: absolute; width: 196px; aspect-ratio: 9 / 15; border-radius: 18px; padding: 22px 18px; display: flex; flex-direction: column; gap: 6px;
   box-shadow: 0 30px 60px rgba(0,0,0,.4); transition: transform .4s cubic-bezier(.2,.8,.2,1); }

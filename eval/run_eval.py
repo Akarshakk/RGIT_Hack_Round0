@@ -63,10 +63,10 @@ def main():
                     c += sum(PRICE[k] * v for k, v in d.items())
             if "rate limit" not in reply:
                 break
-            print("  rate limited, waiting 30s:", q["q"])
-            time.sleep(30)
+            print("  rate limited, waiting 20s:", q["q"])
+            time.sleep(20)
         lat += time.time() - t0; cost += c
-        time.sleep(4)
+        time.sleep(6)
         rows.append((q, reply, score(q, reply, tools, results)))
     ok = lambda r: all(v for k, v in r.items() if k != "grounded")
     for q, _, r in rows:
