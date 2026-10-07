@@ -25,14 +25,15 @@ Numbers (most important):
 - Write money in rupees with Indian digit grouping, e.g. ₹1,23,456.
 
 Advice:
+- For a goal with a deadline ("₹X in N months", "is that realistic"): call `plan_goal` and quote its fields.
 - For "how can I save ₹X a month": call `quick_wins` with target_monthly=X, list its wins with their amounts, then quote its `monthly_total` and, if any, its `shortfall`. To close a shortfall, suggest trimming `biggest_categories_to_trim` in words only, or call `simulate_savings` for exact amounts. Never invent a saving amount.
 - For "future me / long term / what will this become" questions, use `future_you` and say its rate is illustrative, not a promise.
 - Merchant and person names in tool results are already masked; use them as given.
 
 Investments (regulatory, non-negotiable):
-- You are not a SEBI-registered investment adviser. If asked which stock, mutual fund, fund type, SIP, ETF, crypto or other security to buy, or how to allocate money between them: say in one or two sentences that you can't recommend investments, suggest a SEBI-registered investment adviser, and offer budgeting help instead (for example how much they could free up each month, via `quick_wins`). Do not name fund categories, returns, benchmarks or allocation percentages.
+- You are not a SEBI-registered investment adviser. If asked which stock, mutual fund, fund type, SIP, ETF, crypto or other security to buy, or how to allocate money between them: say in one or two sentences that you can't recommend investments and that they should consult a SEBI-registered investment adviser (use those exact words), and offer budgeting help instead (for example how much they could free up each month, via `quick_wins`). Do not name fund categories, returns, benchmarks or allocation percentages.
 
-Style: a direct answer first, then at most three short bullets. Prefer bullets over tables. Keep it under 120 words."""
+Style: never mention tool or function names. A direct answer first, then at most three short bullets. Prefer bullets over tables. Keep it under 120 words."""
 
 PERIOD = {"type": ["string", "null"], "description": "'last_month', a month like '2026-08', or null for all data"}
 STR = lambda d: {"type": ["string", "null"], "description": d}
@@ -67,12 +68,13 @@ def _tool(name, description, props):
 
 TOOLS = [
     _tool("get_overview", "Income, spend, net savings, savings rate and balance trend for a period.", {"period": PERIOD}),
-    _tool("category_breakdown", "Spend by category for a period, optionally limited to a bucket.",
+    _tool("category_breakdown", "Spend by category for a period: total, per-month average and months covered, plus money invested (SIPs). "
+          "Use for rent/EMI/category 'per month' questions and for 'how much did I invest / put into SIP'.",
           {"period": PERIOD, "bucket": {"type": ["string", "null"], "enum": ["Need", "Want", "Savings", "Transfer", None]}}),
     _tool("top_merchants", "Top merchants by spend, optionally within one category.",
           {"period": PERIOD, "category": {"type": ["string", "null"], "enum": CATEGORIES + [None]}, "n": {"type": "integer"}}),
     _tool("monthly_trend", "Monthly spend, optionally for one category.", {"category": {"type": ["string", "null"], "enum": CATEGORIES + [None]}}),
-    _tool("search_transactions", "Find individual transactions.", {
+    _tool("search_transactions", "Find individual transactions, e.g. fees and penalties (category 'Fees & Charges'), a merchant, or large payments.", {
         "query": STR("text to match in merchant or narration"), "category": {"type": ["string", "null"], "enum": CATEGORIES + [None]},
         "min_amount": {"type": ["number", "null"]}, "period": PERIOD, "limit": {"type": "integer"}}),
     _tool("find_recurring", "Recurring payments and subscriptions with monthly cost, flagging ones to check for usage.", {}),
@@ -89,7 +91,7 @@ TOOLS = [
     _tool("simulate_savings", "What-if: saving and new savings rate if spending in categories or merchants is cut by a percentage.",
           {"changes": {"type": "array", "items": _CHANGE}, "months": {"type": "integer"}}),
 ]
-FUNCS = {f.__name__: f for f in (an.get_overview, an.category_breakdown, an.top_merchants, an.monthly_trend, an.search_transactions,
+FUNCS = {f.__name__: f for f in (an.get_overview, an.top_merchants, an.monthly_trend, an.search_transactions,
                                  an.find_recurring, an.find_anomalies, an.generate_insights, an.simulate_savings, an.plan_goal,
                                  an.future_you, an.friend_ledger, an.quick_wins)}
 
@@ -124,6 +126,21 @@ def _pick(value, allowed):
         return None
     v = value.strip().lower()
     return next((a for a in allowed if a.lower() == v), None) or next((a for a in allowed if a.lower().startswith(v) or v.startswith(a.lower())), None)
+
+
+def spending_by_category(df, period=None, bucket=None):
+    """Chat view of category_breakdown: totals plus per-month averages, how many months they cover, and the money that
+    went into investments (SIPs are savings, so the spend breakdown leaves them out)."""
+    d = an._period(df, period)
+    n = an._months(d)
+    rows = an.category_breakdown(df, period, bucket)
+    for r in rows:
+        r["monthly_avg"] = an.R(r["amount"] / n)
+    return dict(months_covered=n, categories=rows, invested_total=an.get_overview(df, period)["invested"],
+                note="amount = total over months_covered; use monthly_avg for 'per month' questions. Investments/SIPs are not spend.")
+
+
+FUNCS["category_breakdown"] = spending_by_category
 
 
 def run_tool(df, name, args):

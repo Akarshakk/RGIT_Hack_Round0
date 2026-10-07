@@ -107,7 +107,7 @@
  {
   "q": "How can I save ₹5,000 a month?",
   "tools": [
-   "generate_insights"
+   "generate_insights|quick_wins"
   ]
  },
  {
@@ -141,7 +141,7 @@
  {
   "q": "Mujhe kitna save karna chahiye har mahine ₹5,000 ke liye, kya cut karun?",
   "tools": [
-   "generate_insights"
+   "generate_insights|quick_wins"
   ],
   "hinglish": true
  },

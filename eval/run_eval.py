@@ -38,7 +38,7 @@ def score(q, reply, tools, results):
         got = nums(reply)
         r["numbers"] = all(any(abs(g - n) <= max(1, abs(n) * 0.005) for g in got) for n in q.get("numbers", []))
         r["text"] = all(re.search(t, low) for t in q.get("text", []))
-        r["tools"] = all(t in tools for t in q.get("tools", []))
+        r["tools"] = all(any(a in tools for a in t.split("|")) for t in q.get("tools", []))
     g = grounding_check(reply, results, q["q"])  # same check the UI badge uses: ₹ figures and percentages
     r["grounded"] = (g["verified"], g["total"])
     return r
