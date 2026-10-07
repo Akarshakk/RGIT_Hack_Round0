@@ -2,6 +2,8 @@
 
 **Paisa kahan gaya?** Drop an Indian bank statement (CSV, Excel or a password-protected PDF) and Credence turns it into a Spotify-Wrapped-style money story in roast or hype mode, then an interactive dashboard and a chat advisor whose every number is checked against your own transactions.
 
+**Live:** https://credence-wine.vercel.app
+
 ![Landing](docs/screens/01_landing.jpg)
 
 ## What it does
@@ -32,7 +34,7 @@ Samples: **Try the sample statement** (HDFC-style CSV), **Try the locked PDF** (
 
 Works on Python 3.9+ (tested on 3.9.6 and 3.12).
 
-**Deploy:** on Render, *New → Blueprint* → pick this repo; `render.yaml` sets everything up and asks for `GROQ_API_KEY`. Elsewhere: start command `uvicorn app.main:app --host 0.0.0.0 --port $PORT`. Groq's free tier allows 8k tokens a minute and 200k a day per model; use a Dev-tier key for a public demo.
+**Deploy:** deployed on Vercel (`vercel.json` + `index.py`; `vercel deploy --prod`, env var `GROQ_API_KEY`). Sessions live in server memory, so if a request lands on a fresh serverless instance the page quietly re-sends the statement once. Render also works: *New → Blueprint* → pick this repo; `render.yaml` sets everything up. Elsewhere: start command `uvicorn app.main:app --host 0.0.0.0 --port $PORT`. Groq's free tier allows 8k tokens a minute and 200k a day per model; use a Dev-tier key for a public demo.
 
 ## Checks
 ```bash

@@ -1,0 +1,12 @@
+.venv
+.remember
+.git
+__pycache__
+docs
+eval
+tests
+scripts
+*.md
+!README.md
+.env
+.env.*

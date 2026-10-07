@@ -1,0 +1,11 @@
+{
+  "services": {
+    "credence": {
+      "root": ".",
+      "entrypoint": "index:app"
+    }
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": { "type": "service", "service": "credence" } }
+  ]
+}

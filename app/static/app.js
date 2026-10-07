@@ -15,6 +15,19 @@ const color = (c) => CAT_COLOR[c] || "#a3b8b2";
 
 let categories = [], story = null, aiQuips = {}, data = null, txAll = [], txFilter = null, lastFile = null;
 
+// Sessions live in server memory. On serverless hosting a new instance may not have yours, so if the server answers
+// 401 we quietly re-send the same statement once and retry. Nothing is stored in the browser beyond this page.
+let replay = null, replaying = null;
+async function api(url, opts) {
+  let r = await fetch(url, opts);
+  if (r.status === 401 && replay) {
+    replaying = replaying || replay().finally(() => setTimeout(() => (replaying = null), 0));
+    const u = await replaying;
+    if (u.ok) r = await fetch(url, opts);
+  }
+  return r;
+}
+
 document.querySelectorAll("[data-logo]").forEach((m) => (m.innerHTML = Wrapped.LOGO));
 
 // ================= upload =================
@@ -68,6 +81,7 @@ async function run(request) {
   let res, j;
   try {
     res = await request();
+    replay = request;
     j = await res.json();
   } catch {
     L.hidden = true;
@@ -83,13 +97,13 @@ async function run(request) {
   }
   stepTo(1);
   const [tx, st, status] = await Promise.all([
-    fetch("/transactions?limit=20000").then((r) => r.json()),
-    fetch("/wrapped").then((r) => r.json()),
+    api("/transactions?limit=20000").then((r) => r.json()),
+    api("/wrapped").then((r) => r.json()),
     fetch("/status").then((r) => r.json()),
   ]);
   txAll = tx; story = st; categories = status.categories;
   aiQuips = {};
-  const aiReq = status.chat_enabled ? fetch("/wrapped/ai", { method: "POST" }).then((r) => r.json()).then((d) => { aiQuips = d.quips || {}; Wrapped.setAI(aiQuips); }).catch(() => {}) : null;
+  const aiReq = status.chat_enabled ? api("/wrapped/ai", { method: "POST" }).then((r) => r.json()).then((d) => { aiQuips = d.quips || {}; Wrapped.setAI(aiQuips); }).catch(() => {}) : null;
   setChatStatus(status.chat_enabled);
   const dashReady = renderDashboard(); // build it behind the loader so it's ready when the story closes
 
@@ -140,8 +154,8 @@ $("delBtn").onclick = async () => { await fetch("/session", { method: "DELETE" }
 const hoursOf = (amt) => (story?.hourly ? Math.round(amt / story.hourly) : null);
 
 async function renderDashboard() {
-  const r = await fetch("/overview");
-  if (!r.ok) return location.reload();
+  const r = await api("/overview");
+  if (!r.ok) { await fetch("/session", { method: "DELETE" }); return location.reload(); } // session gone and nothing to replay
   data = await r.json();
   const o = data.overview;
   const hrs = hoursOf(o.spend);
@@ -307,7 +321,7 @@ $("fyMonthly").oninput = () => { $("fyMonthly").dataset.touched = 1; clearTimeou
 async function drawFuture() {
   if (!data || $("app").hidden) return;
   const r = $("fyYears"); r.style.setProperty("--v", ((r.value - 1) / 29 * 100) + "%");
-  const f = await (await fetch(`/future?monthly=${+$("fyMonthly").value || 0}&years=${r.value}&rate_pct=${fyRate}`)).json();
+  const f = await (await api(`/future?monthly=${+$("fyMonthly").value || 0}&years=${r.value}&rate_pct=${fyRate}`)).json();
   $("fyLine").innerHTML = `<b>${inr(f.final_value)}</b>by ${f.by_year}. You'd put in ${inr(f.contributed)}; compounding at ${f.illustrative_rate_pct}% adds ${inr(f.growth)}.`;
   const svg = $("fyChart"), W = svg.clientWidth || 500, H = 220, pad = 24;
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
@@ -387,14 +401,14 @@ function renderWhatIf() {
 async function simulate() {
   const changes = [...$("whatif").querySelectorAll("input")].filter((r) => +r.value > 0).map((r) => ({ category: r.dataset.c, cut_pct: +r.value }));
   if (!changes.length) return ($("whatifOut").hidden = true);
-  const s = await (await fetch("/simulate", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ changes }) })).json();
+  const s = await (await api("/simulate", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ changes }) })).json();
   const h = hoursOf(s.monthly_saving);
   $("whatifOut").hidden = false;
   $("whatifOut").innerHTML = `You'd save <b>${inr(s.monthly_saving)}</b> a month${h ? ` (${h} hours of work)` : ""}, which is <b>${inr(s.saving_over_period)}</b> a year. Your savings rate goes from ${s.savings_rate_pct_before}% to <b>${s.savings_rate_pct_after}%</b>.`;
 }
 $("goalForm").onsubmit = async (e) => {
   e.preventDefault();
-  const g = await (await fetch("/goal", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ target: +$("gAmt").value, months: +$("gMon").value }) })).json();
+  const g = await (await api("/goal", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ target: +$("gAmt").value, months: +$("gMon").value }) })).json();
   $("gOut").innerHTML = `Save <b>${inr(g.monthly_needed)}</b> a month. You have about ${inr(g.current_monthly_surplus)} spare each month, ` +
     (g.on_track ? `so <b>you're on track</b>.` : `so you're <b>${inr(g.gap)}</b> short each month.`) +
     (g.tips_to_close_gap.length ? `<ul>${g.tips_to_close_gap.map((t) => `<li>${esc(t.title)} (${inr(t.monthly_saving_estimate)}/mo)</li>`).join("")}</ul>` +
@@ -409,7 +423,7 @@ function setTxFilter(cat) {
 }
 $("txClear").onclick = () => setTxFilter(txFilter);
 async function renderTx() {
-  txAll = await (await fetch("/transactions?limit=20000")).json();
+  txAll = await (await api("/transactions?limit=20000")).json();
   const rows = txFilter ? txAll.filter((t) => t.category === txFilter) : txAll;
   $("txFilter").hidden = !txFilter;
   if (txFilter) { $("txFilterLabel").textContent = `${txFilter} · ${rows.length}`; $("txFilterLabel").style.setProperty("--c", color(txFilter)); }
@@ -419,8 +433,8 @@ async function renderTx() {
       <td class="a ${t.amount > 0 ? "cr" : ""}">${t.amount > 0 ? "+" : ""}${inr(t.amount)}</td>
       <td><select data-m="${esc(t.merchant)}" style="--c:${color(t.category)}" aria-label="Category for ${esc(t.merchant)}">${categories.map((c) => `<option${c === t.category ? " selected" : ""}>${esc(c)}</option>`).join("")}</select></td></tr>`).join("");
   $("tx").querySelectorAll("select").forEach((s) => (s.onchange = async () => {
-    await fetch("/recategorize", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ merchant: s.dataset.m, category: s.value }) });
-    story = await (await fetch("/wrapped")).json();
+    await api("/recategorize", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ merchant: s.dataset.m, category: s.value }) });
+    story = await (await api("/wrapped")).json();
     renderDashboard();
   }));
 }
@@ -496,7 +510,7 @@ async function ask(text) {
   let acc = "", notes = "";
   const paint = () => { box.innerHTML = md(acc) + (notes ? `<p class="notice">${esc(notes)}</p>` : ""); $("msgs").scrollTop = 1e9; };
   try {
-    const r = await fetch("/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ message: text }) });
+    const r = await api("/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ message: text }) });
     if (!r.ok) { box.textContent = "Your session expired. Upload the statement again to keep chatting."; return; }
     const rd = r.body.getReader(), dec = new TextDecoder();
     let buf = "";
@@ -548,7 +562,7 @@ fetch("/status").then((r) => r.json()).then(async (s) => {
   categories = s.categories;
   setChatStatus(s.chat_enabled);
   if (!s.has_session) return;
-  story = await (await fetch("/wrapped")).json();
+  story = await (await api("/wrapped")).json();
   await renderDashboard();
   showDashboard();
 });

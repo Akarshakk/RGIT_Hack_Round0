@@ -526,3 +526,9 @@ pre.rbox { flex-basis: 100%; background: var(--ink); border: 1px solid var(--lin
 .alt-sample { font-size: 15px; color: var(--muted); margin: -8px 0 18px; }
 .linkish { background: none; border: 0; padding: 0; color: var(--turmeric); font: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .linkish:hover { color: var(--cream); }
+@media (max-width: 600px) {
+  .topbar-actions .long { display: none; }
+  .topbar-actions { flex-wrap: nowrap; gap: 6px; }
+  .topbar-actions .btn { padding: 8px 11px; font-size: 13px; }
+  .topbar { padding-left: 12px; padding-right: 12px; }
+}
