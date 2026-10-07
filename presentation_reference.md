@@ -7,6 +7,12 @@
 | Date | Phase | What changed in this doc |
 |---|---|---|
 | 2026-10-07 | Research | Initial content from `research.md`, architecture and wireframes drafted |
+| 2026-10-07 | P0 | §5.5 datasets filled: persona, row counts, layouts, injected ground-truth facts |
+
+| 2026-10-07 | P1 | §2 feature status and §3 ingestion step filled |
+| 2026-10-07 | P2 | §2 status, §3 pipeline/innovations, §4 metrics: categorization |
+| 2026-10-07 | P3 | §2 status, §3 semantic layer, ground-truth verification |
+| 2026-10-07 | P4–P7 | §2 status, §3 agent design/guardrails, §4 measured results, §5.4 real screenshots. API-key-dependent metrics are marked as not yet measured |
 
 ---
 
@@ -43,7 +49,7 @@
 3. **Conversational advisor:** "Where did my money go?", "How much on food delivery?", "How can I save ₹5,000 a month?"
 4. **Grounded answers with receipts:** every number links to the computed data behind it. No made-up figures.
 5. **Automatic saving insights:** 50/30/20 health check, **subscription audit** (finds unused ones), small-spend leaks, category spikes, weekend effect, avoidable fees, emergency-fund runway. Each one comes with a ₹/month saving estimate.
-6. **What-if simulator and goal planner:** "Cut food delivery by 30%, and here's your yearly saving." `[TBD P6]`
+6. **What-if simulator and goal planner:** "Cut food spending by 30%" shows ₹1,958/month, ₹23,500/year and the new savings rate (sample persona); the goal planner turns "₹90,000 in 6 months" into a monthly target, the gap vs current surplus, and the tips that close it.
 7. **Learns from corrections:** fix one category and every similar transaction is fixed too.
 8. **Privacy first:** processed in memory, PII masked before the AI sees it, one-click delete.
 9. **Responsible by design:** budgeting guidance only, never stock or mutual-fund tips (SEBI-compliant stance).
@@ -51,12 +57,12 @@
 **Feature status**
 | Feature | Status |
 |---|---|
-| Ingestion (CSV/XLSX/PDF) | `[TBD P1]` |
-| Hybrid categorization | `[TBD P2]` |
-| Insights engine | `[TBD P3]` |
-| Grounded chat | `[TBD P4]` |
-| Web UI | `[TBD P5]` |
-| What-if / goals / eval | `[TBD P6]` |
+| Ingestion (CSV/XLSX/PDF) | ✅ Built. 3 layouts (HDFC-style, SBI-style, password-protected PDF) load to identical row counts and ₹ totals matching ground truth |
+| Hybrid categorization | ✅ Built (rules + 160-keyword merchant dictionary + enum-constrained LLM fallback + user overrides). LLM tier untested until an API key is set |
+| Insights engine | ✅ Built: 8 insight generators (50/30/20, subscription audit, small-spend leak, category spike, weekend effect, fees, emergency runway, anomaly), each with ₹/month saving + evidence row ids, plus `simulate_savings` |
+| Grounded chat | ✅ Built: 10 strict-schema tools, streaming SSE, receipt chips, PII redaction, guardrail prompt. Verified with a scripted fake client; live-model answers **not yet verified** (no API key in this build environment) |
+| Web UI | ✅ Built and walked end to end in a real browser (upload → dashboard → what-if → recategorize → delete), no console errors |
+| What-if / goals / eval | ✅ What-if sliders, goal planner and print-to-PDF report built. Eval harness (25 questions) built; **not yet run** (needs API key) |
 
 ---
 
@@ -66,28 +72,28 @@
 Python · FastAPI · pandas · pdfplumber · Anthropic Claude API (`claude-opus-5-5`, tool use + structured outputs + streaming) · vanilla JS + Chart.js · Server-Sent Events.
 
 ### Pipeline
-1. **Ingest:** detect the header row and map column synonyms across bank layouts, normalize to `date, narration, amount(±), balance`. PDFs go through pdfplumber with the password. `[TBD P1: banks/layouts verified]`
-2. **Categorize (hybrid, 3 tiers):** rules (merchant/VPA dictionary + rail rules) → LLM fallback limited to a **fixed category enum** through structured outputs → user corrections become rules. `[TBD P2: rule-only accuracy X%, hybrid Y%]`
-3. **Analyze:** a deterministic "semantic layer" of 8 analytics functions plus 8 insight generators. `[TBD P3]`
-4. **Converse:** Claude calls the analytics functions as tools and explains the results. PII is redacted first, a guardrail system prompt applies, and responses stream. `[TBD P4]`
+1. **Ingest:** detect the header row and map column synonyms across bank layouts, normalize to `date, narration, amount(±), balance`. PDFs go through pdfplumber with the password. Verified on 3 layouts (183 rows each, debit/credit totals and closing balance match ground truth to the paisa). Handles metadata lines before the header, summary footers, repeated PDF page headers, single-Amount+Dr/Cr and split Withdrawal/Deposit columns, ₹/comma cleanup, mixed date formats. A wrong or missing PDF password gives a clear error; undetectable columns trigger a 3-dropdown mapping step instead of an LLM call.
+2. **Categorize (hybrid, 3 tiers):** rules (merchant/VPA dictionary + rail rules) → LLM fallback limited to a **fixed category enum** through structured outputs → user corrections become rules. Rule-only accuracy on the synthetic sample: **100% (366/366 rows across both layouts)**. This is optimistic, because the sample was written with the same vocabulary as the dictionary; the LLM tier exists for merchants the dictionary does not know (unseen merchants fall back to `Other` without a key). Hybrid accuracy: `[TBD: needs ANTHROPIC_API_KEY]`.
+3. **Analyze:** a deterministic "semantic layer" of 8 pure-pandas functions (overview, category breakdown, top merchants, monthly trend, search, recurring detection, anomalies, what-if simulator) plus 8 insight generators. Verified against ground truth: monthly food totals match to the rupee, all 4 subscriptions found (gym flagged for a usage check), the ₹18,999 anomaly is the only anomaly, the ₹590 fee is found by row id. The 'unused gym' flag is a heuristic (a statement cannot show usage), so the UI phrases it as 'check if you use this'.
+4. **Converse:** Claude calls the analytics functions as tools and explains the results. PII is redacted first, a guardrail system prompt applies, and responses stream. Tools use `strict: true` schemas; refusals, truncation and API errors are handled; server-side model fallback is enabled; history is append-only.
 
 ### Innovations (what makes this more than a ChatGPT wrapper)
 | Innovation | Why it matters | Evidence |
 |---|---|---|
-| **"Numbers from code, words from the LLM"**: tools-only arithmetic plus receipt chips | LLMs make up numbers on tables. A semantic layer raised accuracy from about 45–50% to about 68% in published tests [26] | Our grounding rate: `[TBD P6]` |
-| **Hybrid categorizer with an enum-constrained LLM** | Pure LLM reached about 66% in one benchmark, hybrid systems about 98% [22][23]. The enum prevents invented categories | Ours: rule-only `[TBD]`%, hybrid `[TBD]`% |
-| **India-native narration parsing** (UPI VPA, NACH, IMPS) | Global tools can't read Indian statements | `[TBD P2]` |
-| **Insights → ₹ saving estimate → LLM phrasing** | Specific, personal nudges change behavior. Generic advice doesn't [11] | `[TBD P3]` |
+| **"Numbers from code, words from the LLM"**: tools-only arithmetic plus receipt chips | LLMs make up numbers on tables. A semantic layer raised accuracy from about 45–50% to about 68% in published tests [26] | Grounding rate: harness built (`eval/run_eval.py`), `[not yet measured: needs API key]` |
+| **Hybrid categorizer with an enum-constrained LLM** | Pure LLM reached about 66% in one benchmark, hybrid systems about 98% [22][23]. The enum prevents invented categories | Ours: rule-only 100% (synthetic, optimistic), hybrid `[TBD: needs API key]` |
+| **India-native narration parsing** (UPI VPA, NACH, IMPS) | Global tools can't read Indian statements | Parses both `/`-separated (HDFC-style) and `-`-separated (SBI-style) narrations to the same merchant, rail and counterparty |
+| **Insights → ₹ saving estimate → LLM phrasing** | Specific, personal nudges change behavior. Generic advice doesn't [11] | On the sample persona the insight engine finds ₹1,499/month (gym), ₹1,747 (weekend food), ₹2,275 (wants above 30%) |
 | **Privacy by design** (in-memory, redaction, aggregates-only) | Matches the DPDP Rules 2025 consent and minimization principles [28][29] | — |
-| **Regulatory guardrail** (no securities advice) | SEBI holds AI advice to the adviser's accountability [31][32] | Refusal compliance `[TBD P6]` |
-| **Cost per chat turn** | About $0.036 on Opus 5.5 before caching (estimate) | Measured: `[TBD P6]` |
+| **Regulatory guardrail** (no securities advice) | SEBI holds AI advice to the adviser's accountability [31][32] | Refusal compliance: 3 refusal questions in eval, `[not yet measured]` |
+| **Cost per chat turn** | About $0.036 on Opus 5.5 before caching (estimate) | Measured: `[not yet measured]` |
 
 ---
 
 ## 4. Impact & Future Scope
 
 ### Impact
-- **Individual:** turns an unreadable statement into a clear picture in under a minute, plus 3–5 concrete actions worth `₹[TBD P6]`/month on our sample persona.
+- **Individual:** turns an unreadable statement into a clear picture in under a minute, plus 3–5 concrete actions worth about ₹1,500–2,300/month each on our sample persona (gym check ₹1,499, weekend food ₹1,747, wants above 30% ₹2,275; estimates overlap, so they are not additive).
 - **Financial literacy:** teaches the ideas (50/30/20, emergency fund, subscription hygiene) *using the user's own data*, which is the strongest way to learn.
 - **Scale:** relevant to anyone with a bank account and UPI. That covers hundreds of millions of people, since UPI handles over 24 billion transactions a month [6].
 - **Trust:** grounded numbers, no product pushing, and no data kept.
@@ -95,12 +101,12 @@ Python · FastAPI · pandas · pdfplumber · Anthropic Claude API (`claude-opus-
 ### Measured results (fill from eval)
 | Metric | Target | Actual |
 |---|---|---|
-| Categorization accuracy (hybrid) | ≥ 95% | `[TBD P2]` |
-| Chat answer accuracy | ≥ 90% | `[TBD P6]` |
-| Grounding rate (₹ figures traceable to tools) | ≥ 98% | `[TBD P6]` |
-| Investment-advice refusal compliance | 100% | `[TBD P6]` |
-| Upload → dashboard time | < 5 s | `[TBD P5]` |
-| Cost per chat turn | < $0.05 | `[TBD P6]` |
+| Categorization accuracy (hybrid) | ≥ 95% | Rule-only 100% on synthetic; hybrid `[TBD: API key]` |
+| Chat answer accuracy | ≥ 90% | `[not yet measured]` |
+| Grounding rate (₹ figures traceable to tools) | ≥ 98% | `[not yet measured]` |
+| Investment-advice refusal compliance | 100% | `[not yet measured]` |
+| Upload → dashboard time | < 5 s | **0.3 s** server time for the 6-page encrypted PDF (0.28 s upload + 0.02 s overview), measured locally |
+| Cost per chat turn | < $0.05 | `[not yet measured]` |
 
 ### Future scope
 1. **Account Aggregator integration:** consent-based live data from 179 FIPs and 2.88 billion enabled accounts, with no uploads [33]. Requires FIU onboarding.
@@ -205,12 +211,12 @@ sequenceDiagram
 │ 03 Sep Swiggy     -₹412   Food     [▼]   │ [________________] ➤  │
 └──────────────────────────────────────────┴───────────────────────┘
 ```
-Real screenshots: `[TBD P5: docs/screens/*.png]`
+Real screenshots: `docs/screens/1_upload.png`, `2_dashboard.png`, `3_after_actions.png`, `4_mobile.png`.
 
 ### 5.5 Research summary
 - Full research with 34 cited sources: `research.md`.
-- Datasets: synthetic statements in 2 Indian bank layouts plus a password-protected PDF, generated with ground truth for evaluation. `[TBD P0: row counts, persona details]`
-- Evaluation method: about 25 questions scored on accuracy, grounding rate and refusal compliance. `[TBD P6]`
+- Datasets: synthetic statements in 2 Indian bank layouts plus a password-protected PDF, generated with ground truth for evaluation. Persona: 24-year-old in Mumbai, ₹65,000 salary, Jun–Sep 2026 (seeded, reproducible via `scripts/make_sample.py`). **183 transactions**, ₹2,29,414 debits, ₹2,60,000 credits. Three files with identical data: HDFC-style CSV (metadata header lines, separate Withdrawal/Deposit columns, summary footer), SBI-style CSV (single Amount + Dr/Cr, hyphen-separated narrations, comma-formatted numbers) and a password-protected PDF (6 pages, ruled table). Narrations use real UPI/NEFT/IMPS/NACH/ATM formats. Injected facts for evaluation: a forgotten ₹1,499 gym subscription, 3 other subscriptions (Netflix, Spotify, Hotstar), weekend Swiggy/Zomato spending, a ₹18,999 electronics anomaly (Croma, Aug), a ₹590 late-payment fee.
+- Evaluation method: about 25 questions scored on accuracy, grounding rate and refusal compliance. `[not yet measured: run eval/run_eval.py with a key]`
 
 ### 5.6 References
 1. NextIAS — India household savings fall (2025). https://www.nextias.com/ca/current-affairs/07-07-2025/india-household-savings-fall

@@ -30,14 +30,14 @@ requirements.txt, .env.example, README.md
 ## Phase tracker
 | Phase | Name | Status |
 |---|---|---|
-| P0 | Setup + synthetic data | ☐ |
-| P1 | Ingestion (CSV/XLSX/PDF → normalized table) | ☐ |
-| P2 | Categorization (rules + UPI parsing + LLM fallback) | ☐ |
-| P3 | Analytics engine + saving-tip generators | ☐ |
-| P4 | Chat agent (Claude tool use, streaming, guardrails, redaction) | ☐ |
-| P5 | Web UI (upload → dashboard → chat → tips) | ☐ |
-| P6 | Differentiators (what-if simulator, Hinglish, report export) + eval | ☐ |
-| P7 | Hardening, deploy, demo script, final presentation material | ☐ |
+| P0 | Setup + synthetic data | ☑ |
+| P1 | Ingestion (CSV/XLSX/PDF → normalized table) | ☑ |
+| P2 | Categorization (rules + UPI parsing + LLM fallback) | ☑ (LLM tier unverified: no API key) |
+| P3 | Analytics engine + saving-tip generators | ☑ |
+| P4 | Chat agent (Claude tool use, streaming, guardrails, redaction) | ☑ (live-model parts unverified: no API key) |
+| P5 | Web UI (upload → dashboard → chat → tips) | ☑ (live-model parts unverified: no API key) |
+| P6 | Differentiators (what-if simulator, Hinglish, report export) + eval | ☑ (live-model parts unverified: no API key) |
+| P7 | Hardening, deploy, demo script, final presentation material | ☑ (live-model parts unverified: no API key) |
 
 The schedule is ordered by dependencies. P0–P3 work with **no API key**. P4 is the first phase that needs `ANTHROPIC_API_KEY`. If time runs short, **cut P6 first**: P0–P5 on their own make a complete demo.
 

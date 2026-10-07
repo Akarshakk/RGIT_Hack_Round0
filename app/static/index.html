@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kharcha</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--ink:#1c2230;--mute:#667085;--line:#e4e7ee;--brand:#5b4bdb;--good:#12805c;--warn:#b54708;--bad:#b42318}
+@media (prefers-color-scheme:dark){:root{--bg:#10131a;--card:#181c26;--ink:#e8eaf0;--mute:#98a2b3;--line:#2a3040;--brand:#8b7dff;--good:#4ade80;--warn:#fbbf24;--bad:#f87171}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--card)}
+header b{font-size:18px;color:var(--brand)}
+button,select,input{font:inherit;color:inherit}
+button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:8px 12px;cursor:pointer}
+button.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+button.danger{color:var(--bad)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.card h3{margin:0 0 8px;font-size:14px;color:var(--mute);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+#upload{max-width:560px;margin:32px auto;padding:0 16px}
+#drop{border:2px dashed var(--line);border-radius:12px;padding:36px 16px;text-align:center;cursor:pointer}
+#drop.over{border-color:var(--brand)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.note{color:var(--mute);font-size:13px}
+.err{color:var(--bad);margin-top:8px}
+#app{display:none;padding:12px 16px;max-width:1300px;margin:auto}
+.tabs{display:none;gap:8px;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;align-items:start}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.kpi small{color:var(--mute)} .kpi div{font-size:20px;font-weight:700}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cv{position:relative;height:230px}
+.bar{display:flex;height:22px;border-radius:6px;overflow:hidden;font-size:12px;color:#fff}
+.bar span{display:flex;align-items:center;justify-content:center;white-space:nowrap}
+.tip{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.tip:first-of-type{border-top:0}
+.save{color:var(--good);font-weight:700;white-space:nowrap}
+.sev-high{border-left:4px solid var(--bad);padding-left:8px}.sev-medium{border-left:4px solid var(--warn);padding-left:8px}.sev-low{border-left:4px solid var(--good);padding-left:8px}
+#chat{position:sticky;top:8px;display:flex;flex-direction:column;height:calc(100vh - 90px);min-height:420px}
+#msgs{flex:1;overflow:auto;padding:4px}
+.m{margin:6px 0;padding:8px 10px;border-radius:10px;max-width:92%;white-space:pre-wrap}
+.m.u{background:var(--brand);color:#fff;margin-left:auto}.m.a{background:var(--bg);border:1px solid var(--line)}
+.chip{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:2px 9px;margin:3px 4px 0 0;font-size:12px;cursor:pointer;background:var(--card)}
+.chip.rc{color:var(--brand)}
+pre{background:var(--bg);padding:8px;border-radius:8px;overflow:auto;max-height:220px;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:5px 6px;border-top:1px solid var(--line);text-align:left}
+td.n{text-align:right;white-space:nowrap}
+#txwrap{max-height:340px;overflow:auto}
+input[type=range]{width:100%}
+@media (max-width:900px){.grid{grid-template-columns:1fr}.tabs{display:flex}.kpis{grid-template-columns:repeat(2,1fr)}.charts{grid-template-columns:1fr}#chat{position:static;height:75vh}body.t-dash #chatcol{display:none}body.t-chat #dashcol{display:none}}
+@media print{header button,#chatcol,#upload,.tabs,.noprint{display:none!important}.grid{display:block}}
+</style>
+</head>
+<body class="t-dash">
+<header><b>Kharcha</b><span class="row" style="margin:0"><button id="printBtn" class="noprint" style="display:none">Download my report</button><button id="delBtn" class="danger" style="display:none">Delete my data</button></span></header>
+
+<section id="upload">
+  <div class="card">
+    <h3>Upload your bank statement</h3>
+    <div id="drop">Drop a CSV, XLSX or PDF here, or click to choose<input id="file" type="file" accept=".csv,.xlsx,.xls,.pdf" hidden></div>
+    <div class="row"><label>PDF password <input id="pw" type="password" placeholder="only if the PDF is locked"></label></div>
+    <div id="mapBox" style="display:none">
+      <p class="note">We couldn't detect the columns. Pick them:</p>
+      <div class="row"><label>Date <select id="mDate"></select></label><label>Description <select id="mNarr"></select></label><label>Amount (+credit / −debit) <select id="mAmt"></select></label><button class="primary" id="mapGo">Continue</button></div>
+    </div>
+    <div class="row"><button class="primary" id="sampleBtn">Try sample statement</button><button id="samplePdf">Try sample PDF (password-protected)</button></div>
+    <p class="note">🔒 Your file is processed in memory only and never saved. Personal details are masked before any AI sees them. By uploading you consent to this processing under India's DPDP Act. Delete everything any time with one click. Kharcha gives budgeting help, not investment advice.</p>
+    <div id="upErr" class="err"></div>
+  </div>
+</section>
+
+<main id="app">
+  <div class="tabs"><button id="tDash" class="primary">Dashboard</button><button id="tChat">Chat</button></div>
+  <div class="grid">
+    <div id="dashcol">
+      <div class="kpis" id="kpis"></div>
+      <div class="card"><h3>Where the money went</h3><div class="charts"><div class="cv"><canvas id="donut"></canvas></div><div class="cv"><canvas id="trend"></canvas></div></div></div>
+      <div class="card"><h3>50 / 30 / 20 check</h3><div class="bar" id="rule"></div><div class="note" id="ruleNote"></div></div>
+      <div class="card"><h3>Saving tips</h3><div id="tips"></div></div>
+      <div class="card noprint"><h3>What if I cut…</h3><div id="whatif"></div><div id="whatifOut" class="save"></div></div>
+      <div class="card noprint"><h3>Goal planner</h3><div class="row" style="margin:0">I want ₹<input id="gAmt" type="number" value="90000" style="width:100px"> in <input id="gMon" type="number" value="6" style="width:50px"> months <button id="gGo">Plan</button></div><div id="gOut" style="margin-top:8px"></div></div>
+      <div class="card"><h3>Transactions</h3><div id="txwrap"><table id="tx"></table></div></div>
+    </div>
+    <div id="chatcol">
+      <div class="card" id="chat">
+        <div id="msgs"><div class="m a">Hi! I'm Kharcha. Ask me about your spending, or how to save more.</div></div>
+        <div id="sugg"></div>
+        <div class="row"><input id="q" placeholder="Ask about your money…" style="flex:1;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--bg)"><button class="primary" id="send">Send</button></div>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>

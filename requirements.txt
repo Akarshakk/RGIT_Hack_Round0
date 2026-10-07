@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+pandas
+openpyxl
+pdfplumber
+groq
+python-multipart
+python-dotenv
+reportlab  # only for scripts/make_sample.py

@@ -1,0 +1,1552 @@
+{
+ "password": "kharcha123",
+ "opening_balance": 40000,
+ "closing_balance": 70586,
+ "row_count": 183,
+ "total_debit": 229414,
+ "total_credit": 260000,
+ "taxonomy": {
+  "Income": "Income",
+  "Rent": "Need",
+  "Groceries": "Need",
+  "Utilities & Bills": "Need",
+  "EMI & Loans": "Need",
+  "Transport": "Need",
+  "Fees & Charges": "Need",
+  "Food & Dining": "Want",
+  "Shopping": "Want",
+  "Subscriptions": "Want",
+  "Entertainment": "Want",
+  "Investments": "Savings",
+  "Cash Withdrawal": "Transfer",
+  "Transfers": "Transfer",
+  "Other": "Want"
+ },
+ "food_by_month": {
+  "2026-06": 5787,
+  "2026-07": 6049,
+  "2026-08": 6987,
+  "2026-09": 6506
+ },
+ "spend_by_category": {
+  "Rent": 72000,
+  "Groceries": 10291,
+  "Utilities & Bills": 7052,
+  "EMI & Loans": 26000,
+  "Transport": 6270,
+  "Fees & Charges": 590,
+  "Food & Dining": 25329,
+  "Shopping": 26111,
+  "Subscriptions": 10264,
+  "Entertainment": 0,
+  "Investments": 20000,
+  "Cash Withdrawal": 16000,
+  "Transfers": 9507,
+  "Other": 0
+ },
+ "subscriptions": [
+  {
+   "merchant": "netflix",
+   "monthly": 649,
+   "unused": false
+  },
+  {
+   "merchant": "spotify",
+   "monthly": 119,
+   "unused": false
+  },
+  {
+   "merchant": "hotstar",
+   "monthly": 299,
+   "unused": false
+  },
+  {
+   "merchant": "cultfit gym",
+   "monthly": 1499,
+   "unused": true
+  }
+ ],
+ "other_recurring": [
+  {
+   "merchant": "jio",
+   "monthly": 299
+  }
+ ],
+ "anomaly": {
+  "id": 119,
+  "merchant": "croma",
+  "amount": 18999,
+  "date": "2026-08-18"
+ },
+ "late_fee": {
+  "id": 120,
+  "amount": 590,
+  "date": "2026-08-20"
+ },
+ "rows": [
+  {
+   "id": 0,
+   "date": "2026-06-01",
+   "amount": 65000,
+   "category": "Income",
+   "merchant": "acme tech",
+   "narration": "NEFT CR:HDFC0000123:ACME TECH PVT LTD:SALARY JUN 2026:N104332181960"
+  },
+  {
+   "id": 1,
+   "date": "2026-06-01",
+   "amount": -119,
+   "category": "Transport",
+   "merchant": "rapido",
+   "narration": "UPI/P2M/429401965569/rapido@ybl/Ride"
+  },
+  {
+   "id": 2,
+   "date": "2026-06-02",
+   "amount": -18000,
+   "category": "Rent",
+   "merchant": "ramesh patil",
+   "narration": "IMPS/013389083863/RAMESH PATIL/RENT JUN 2026"
+  },
+  {
+   "id": 3,
+   "date": "2026-06-03",
+   "amount": -6500,
+   "category": "EMI & Loans",
+   "merchant": "bajaj finserv",
+   "narration": "NACH/DR/BAJAJ FINSERV LTD/EMI 79402654"
+  },
+  {
+   "id": 4,
+   "date": "2026-06-03",
+   "amount": -600,
+   "category": "Groceries",
+   "merchant": "zepto",
+   "narration": "UPI/P2M/542784980841/zepto@okaxis/Grocery"
+  },
+  {
+   "id": 5,
+   "date": "2026-06-04",
+   "amount": -5000,
+   "category": "Investments",
+   "merchant": "groww sip",
+   "narration": "NACH/DR/GROWW MF SIP/16155940"
+  },
+  {
+   "id": 6,
+   "date": "2026-06-04",
+   "amount": -427,
+   "category": "Groceries",
+   "merchant": "blinkit",
+   "narration": "UPI/P2M/280598262045/blinkit@paytm/Grocery"
+  },
+  {
+   "id": 7,
+   "date": "2026-06-05",
+   "amount": -649,
+   "category": "Subscriptions",
+   "merchant": "netflix",
+   "narration": "UPI/P2M/184959310341/netflix@icici/Autopay"
+  },
+  {
+   "id": 8,
+   "date": "2026-06-05",
+   "amount": -96,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/037917693676/uber@axisbank/Ride"
+  },
+  {
+   "id": 9,
+   "date": "2026-06-05",
+   "amount": -511,
+   "category": "Shopping",
+   "merchant": "amazon",
+   "narration": "UPI/P2M/163287083172/amazon@apl/Order"
+  },
+  {
+   "id": 10,
+   "date": "2026-06-06",
+   "amount": -119,
+   "category": "Subscriptions",
+   "merchant": "spotify",
+   "narration": "UPI/P2M/316475255341/spotify@axisbank/Autopay"
+  },
+  {
+   "id": 11,
+   "date": "2026-06-06",
+   "amount": -399,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/848018451462/zomato@icici/Order 710"
+  },
+  {
+   "id": 12,
+   "date": "2026-06-06",
+   "amount": -464,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/482814893252/zomato@icici/Order 103"
+  },
+  {
+   "id": 13,
+   "date": "2026-06-07",
+   "amount": -299,
+   "category": "Subscriptions",
+   "merchant": "hotstar",
+   "narration": "UPI/P2M/928327648350/hotstar@ybl/Autopay"
+  },
+  {
+   "id": 14,
+   "date": "2026-06-07",
+   "amount": -284,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/154303911718/zomato@icici/Order 600"
+  },
+  {
+   "id": 15,
+   "date": "2026-06-09",
+   "amount": -468,
+   "category": "Groceries",
+   "merchant": "blinkit",
+   "narration": "UPI/P2M/182449353487/blinkit@paytm/Grocery"
+  },
+  {
+   "id": 16,
+   "date": "2026-06-10",
+   "amount": -1499,
+   "category": "Subscriptions",
+   "merchant": "cultfit gym",
+   "narration": "UPI/P2M/305641395376/cultfit@ybl/Gym membership"
+  },
+  {
+   "id": 17,
+   "date": "2026-06-11",
+   "amount": -442,
+   "category": "Food & Dining",
+   "merchant": "starbucks",
+   "narration": "UPI/P2M/107991183842/starbucks@hdfcbank/Cafe"
+  },
+  {
+   "id": 18,
+   "date": "2026-06-11",
+   "amount": -2000,
+   "category": "Cash Withdrawal",
+   "merchant": "atm",
+   "narration": "ATM WDL/NFS/889579868727/MUMBAI ANDHERI W"
+  },
+  {
+   "id": 19,
+   "date": "2026-06-11",
+   "amount": -638,
+   "category": "Transfers",
+   "merchant": "Priya Nair",
+   "narration": "UPI/P2A/581223623166/priya.n@oksbi/Split"
+  },
+  {
+   "id": 20,
+   "date": "2026-06-12",
+   "amount": -299,
+   "category": "Utilities & Bills",
+   "merchant": "jio",
+   "narration": "UPI/P2M/724238849696/jio@ybl/Recharge"
+  },
+  {
+   "id": 21,
+   "date": "2026-06-12",
+   "amount": -143,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/315869232260/uber@axisbank/Ride"
+  },
+  {
+   "id": 22,
+   "date": "2026-06-13",
+   "amount": -401,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/824896383465/swiggy@ybl/Order 775"
+  },
+  {
+   "id": 23,
+   "date": "2026-06-13",
+   "amount": -237,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/340608835615/uber@axisbank/Ride"
+  },
+  {
+   "id": 24,
+   "date": "2026-06-14",
+   "amount": -343,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/315098393010/zomato@icici/Order 223"
+  },
+  {
+   "id": 25,
+   "date": "2026-06-14",
+   "amount": -511,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/051834738299/swiggy@ybl/Order 169"
+  },
+  {
+   "id": 26,
+   "date": "2026-06-15",
+   "amount": -1570,
+   "category": "Utilities & Bills",
+   "merchant": "adani electricity",
+   "narration": "UPI/P2M/328710122691/adanielectricity@icici/Electricity bill"
+  },
+  {
+   "id": 27,
+   "date": "2026-06-15",
+   "amount": -144,
+   "category": "Transport",
+   "merchant": "rapido",
+   "narration": "UPI/P2M/872148951343/rapido@ybl/Ride"
+  },
+  {
+   "id": 28,
+   "date": "2026-06-15",
+   "amount": -605,
+   "category": "Transfers",
+   "merchant": "Amit Kulkarni",
+   "narration": "UPI/P2A/603669096705/amit.k@ybl/Split"
+  },
+  {
+   "id": 29,
+   "date": "2026-06-20",
+   "amount": -401,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/631165667010/swiggy@ybl/Order 903"
+  },
+  {
+   "id": 30,
+   "date": "2026-06-20",
+   "amount": -366,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/133387262473/zomato@icici/Order 845"
+  },
+  {
+   "id": 31,
+   "date": "2026-06-20",
+   "amount": -235,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/468044369957/uber@axisbank/Ride"
+  },
+  {
+   "id": 32,
+   "date": "2026-06-21",
+   "amount": -500,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/810801326773/zomato@icici/Order 927"
+  },
+  {
+   "id": 33,
+   "date": "2026-06-22",
+   "amount": -399,
+   "category": "Food & Dining",
+   "merchant": "starbucks",
+   "narration": "UPI/P2M/985435346247/starbucks@hdfcbank/Cafe"
+  },
+  {
+   "id": 34,
+   "date": "2026-06-22",
+   "amount": -121,
+   "category": "Transport",
+   "merchant": "rapido",
+   "narration": "UPI/P2M/484656482366/rapido@ybl/Ride"
+  },
+  {
+   "id": 35,
+   "date": "2026-06-24",
+   "amount": -175,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/634216073375/uber@axisbank/Ride"
+  },
+  {
+   "id": 36,
+   "date": "2026-06-25",
+   "amount": -2000,
+   "category": "Cash Withdrawal",
+   "merchant": "atm",
+   "narration": "ATM WDL/NFS/743487347143/MUMBAI ANDHERI W"
+  },
+  {
+   "id": 37,
+   "date": "2026-06-27",
+   "amount": -377,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/064746872343/swiggy@ybl/Order 268"
+  },
+  {
+   "id": 38,
+   "date": "2026-06-27",
+   "amount": -468,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/805009788208/swiggy@ybl/Order 693"
+  },
+  {
+   "id": 39,
+   "date": "2026-06-27",
+   "amount": -148,
+   "category": "Transport",
+   "merchant": "rapido",
+   "narration": "UPI/P2M/303654145868/rapido@ybl/Ride"
+  },
+  {
+   "id": 40,
+   "date": "2026-06-28",
+   "amount": -432,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/136193990916/swiggy@ybl/Order 170"
+  },
+  {
+   "id": 41,
+   "date": "2026-06-28",
+   "amount": -402,
+   "category": "Groceries",
+   "merchant": "zepto",
+   "narration": "UPI/P2M/164005242786/zepto@okaxis/Grocery"
+  },
+  {
+   "id": 42,
+   "date": "2026-06-28",
+   "amount": -644,
+   "category": "Transfers",
+   "merchant": "Priya Nair",
+   "narration": "UPI/P2A/688937346706/priya.n@oksbi/Split"
+  },
+  {
+   "id": 43,
+   "date": "2026-07-01",
+   "amount": 65000,
+   "category": "Income",
+   "merchant": "acme tech",
+   "narration": "NEFT CR:HDFC0000123:ACME TECH PVT LTD:SALARY JUL 2026:N627298069901"
+  },
+  {
+   "id": 44,
+   "date": "2026-07-01",
+   "amount": -126,
+   "category": "Transport",
+   "merchant": "rapido",
+   "narration": "UPI/P2M/621745961586/rapido@ybl/Ride"
+  },
+  {
+   "id": 45,
+   "date": "2026-07-02",
+   "amount": -18000,
+   "category": "Rent",
+   "merchant": "ramesh patil",
+   "narration": "IMPS/627204653755/RAMESH PATIL/RENT JUL 2026"
+  },
+  {
+   "id": 46,
+   "date": "2026-07-03",
+   "amount": -6500,
+   "category": "EMI & Loans",
+   "merchant": "bajaj finserv",
+   "narration": "NACH/DR/BAJAJ FINSERV LTD/EMI 64641708"
+  },
+  {
+   "id": 47,
+   "date": "2026-07-03",
+   "amount": -330,
+   "category": "Food & Dining",
+   "merchant": "starbucks",
+   "narration": "UPI/P2M/451680876038/starbucks@hdfcbank/Cafe"
+  },
+  {
+   "id": 48,
+   "date": "2026-07-04",
+   "amount": -5000,
+   "category": "Investments",
+   "merchant": "groww sip",
+   "narration": "NACH/DR/GROWW MF SIP/00330923"
+  },
+  {
+   "id": 49,
+   "date": "2026-07-04",
+   "amount": -282,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/831367837770/zomato@icici/Order 669"
+  },
+  {
+   "id": 50,
+   "date": "2026-07-04",
+   "amount": -336,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/634957885685/swiggy@ybl/Order 401"
+  },
+  {
+   "id": 51,
+   "date": "2026-07-05",
+   "amount": -649,
+   "category": "Subscriptions",
+   "merchant": "netflix",
+   "narration": "UPI/P2M/374529912419/netflix@icici/Autopay"
+  },
+  {
+   "id": 52,
+   "date": "2026-07-05",
+   "amount": -358,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/431351823374/zomato@icici/Order 377"
+  },
+  {
+   "id": 53,
+   "date": "2026-07-05",
+   "amount": -493,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/343524082400/zomato@icici/Order 202"
+  },
+  {
+   "id": 54,
+   "date": "2026-07-06",
+   "amount": -119,
+   "category": "Subscriptions",
+   "merchant": "spotify",
+   "narration": "UPI/P2M/049663193149/spotify@axisbank/Autopay"
+  },
+  {
+   "id": 55,
+   "date": "2026-07-06",
+   "amount": -134,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/196937923747/uber@axisbank/Ride"
+  },
+  {
+   "id": 56,
+   "date": "2026-07-07",
+   "amount": -299,
+   "category": "Subscriptions",
+   "merchant": "hotstar",
+   "narration": "UPI/P2M/190586518506/hotstar@ybl/Autopay"
+  },
+  {
+   "id": 57,
+   "date": "2026-07-07",
+   "amount": -188,
+   "category": "Transport",
+   "merchant": "rapido",
+   "narration": "UPI/P2M/713695944064/rapido@ybl/Ride"
+  },
+  {
+   "id": 58,
+   "date": "2026-07-07",
+   "amount": -521,
+   "category": "Transfers",
+   "merchant": "Amit Kulkarni",
+   "narration": "UPI/P2A/900532931839/amit.k@ybl/Split"
+  },
+  {
+   "id": 59,
+   "date": "2026-07-09",
+   "amount": -774,
+   "category": "Groceries",
+   "merchant": "blinkit",
+   "narration": "UPI/P2M/584044997278/blinkit@paytm/Grocery"
+  },
+  {
+   "id": 60,
+   "date": "2026-07-10",
+   "amount": -1499,
+   "category": "Subscriptions",
+   "merchant": "cultfit gym",
+   "narration": "UPI/P2M/716572628498/cultfit@ybl/Gym membership"
+  },
+  {
+   "id": 61,
+   "date": "2026-07-10",
+   "amount": -202,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/095214562328/uber@axisbank/Ride"
+  },
+  {
+   "id": 62,
+   "date": "2026-07-10",
+   "amount": -2000,
+   "category": "Cash Withdrawal",
+   "merchant": "atm",
+   "narration": "ATM WDL/NFS/370985931746/MUMBAI ANDHERI W"
+  },
+  {
+   "id": 63,
+   "date": "2026-07-11",
+   "amount": -502,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/710947775204/swiggy@ybl/Order 753"
+  },
+  {
+   "id": 64,
+   "date": "2026-07-11",
+   "amount": -490,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/167190229413/zomato@icici/Order 216"
+  },
+  {
+   "id": 65,
+   "date": "2026-07-12",
+   "amount": -299,
+   "category": "Utilities & Bills",
+   "merchant": "jio",
+   "narration": "UPI/P2M/776945314737/jio@ybl/Recharge"
+  },
+  {
+   "id": 66,
+   "date": "2026-07-12",
+   "amount": -432,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/938677496499/zomato@icici/Order 720"
+  },
+  {
+   "id": 67,
+   "date": "2026-07-12",
+   "amount": -409,
+   "category": "Food & Dining",
+   "merchant": "starbucks",
+   "narration": "UPI/P2M/770348247710/starbucks@hdfcbank/Cafe"
+  },
+  {
+   "id": 68,
+   "date": "2026-07-12",
+   "amount": -690,
+   "category": "Groceries",
+   "merchant": "zepto",
+   "narration": "UPI/P2M/886753396360/zepto@okaxis/Grocery"
+  },
+  {
+   "id": 69,
+   "date": "2026-07-12",
+   "amount": -522,
+   "category": "Transfers",
+   "merchant": "Priya Nair",
+   "narration": "UPI/P2A/869261796405/priya.n@oksbi/Split"
+  },
+  {
+   "id": 70,
+   "date": "2026-07-15",
+   "amount": -1783,
+   "category": "Utilities & Bills",
+   "merchant": "adani electricity",
+   "narration": "UPI/P2M/965075273545/adanielectricity@icici/Electricity bill"
+  },
+  {
+   "id": 71,
+   "date": "2026-07-15",
+   "amount": -393,
+   "category": "Transfers",
+   "merchant": "Priya Nair",
+   "narration": "UPI/P2A/351585064317/priya.n@oksbi/Split"
+  },
+  {
+   "id": 72,
+   "date": "2026-07-17",
+   "amount": -629,
+   "category": "Groceries",
+   "merchant": "zepto",
+   "narration": "UPI/P2M/677378263982/zepto@okaxis/Grocery"
+  },
+  {
+   "id": 73,
+   "date": "2026-07-17",
+   "amount": -1527,
+   "category": "Shopping",
+   "merchant": "amazon",
+   "narration": "UPI/P2M/424745171236/amazon@apl/Order"
+  },
+  {
+   "id": 74,
+   "date": "2026-07-18",
+   "amount": -333,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/341232812067/swiggy@ybl/Order 881"
+  },
+  {
+   "id": 75,
+   "date": "2026-07-19",
+   "amount": -339,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/447134936183/zomato@icici/Order 133"
+  },
+  {
+   "id": 76,
+   "date": "2026-07-19",
+   "amount": -491,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/210249947174/swiggy@ybl/Order 372"
+  },
+  {
+   "id": 77,
+   "date": "2026-07-19",
+   "amount": -102,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/974395339421/uber@axisbank/Ride"
+  },
+  {
+   "id": 78,
+   "date": "2026-07-20",
+   "amount": -2000,
+   "category": "Cash Withdrawal",
+   "merchant": "atm",
+   "narration": "ATM WDL/NFS/120047113826/MUMBAI ANDHERI W"
+  },
+  {
+   "id": 79,
+   "date": "2026-07-21",
+   "amount": -214,
+   "category": "Transport",
+   "merchant": "rapido",
+   "narration": "UPI/P2M/809134316117/rapido@ybl/Ride"
+  },
+  {
+   "id": 80,
+   "date": "2026-07-22",
+   "amount": -92,
+   "category": "Transport",
+   "merchant": "rapido",
+   "narration": "UPI/P2M/748217594647/rapido@ybl/Ride"
+  },
+  {
+   "id": 81,
+   "date": "2026-07-23",
+   "amount": -512,
+   "category": "Groceries",
+   "merchant": "blinkit",
+   "narration": "UPI/P2M/480861317127/blinkit@paytm/Grocery"
+  },
+  {
+   "id": 82,
+   "date": "2026-07-23",
+   "amount": -166,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/005045562386/uber@axisbank/Ride"
+  },
+  {
+   "id": 83,
+   "date": "2026-07-24",
+   "amount": -211,
+   "category": "Transport",
+   "merchant": "rapido",
+   "narration": "UPI/P2M/662702895171/rapido@ybl/Ride"
+  },
+  {
+   "id": 84,
+   "date": "2026-07-25",
+   "amount": -418,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/771906594013/zomato@icici/Order 612"
+  },
+  {
+   "id": 85,
+   "date": "2026-07-25",
+   "amount": -452,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/490278742967/swiggy@ybl/Order 883"
+  },
+  {
+   "id": 86,
+   "date": "2026-07-26",
+   "amount": -384,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/551256746807/zomato@icici/Order 456"
+  },
+  {
+   "id": 87,
+   "date": "2026-07-28",
+   "amount": -1641,
+   "category": "Shopping",
+   "merchant": "amazon",
+   "narration": "UPI/P2M/516048175496/amazon@apl/Order"
+  },
+  {
+   "id": 88,
+   "date": "2026-08-01",
+   "amount": 65000,
+   "category": "Income",
+   "merchant": "acme tech",
+   "narration": "NEFT CR:HDFC0000123:ACME TECH PVT LTD:SALARY AUG 2026:N352904228421"
+  },
+  {
+   "id": 89,
+   "date": "2026-08-01",
+   "amount": -475,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/493689980940/zomato@icici/Order 217"
+  },
+  {
+   "id": 90,
+   "date": "2026-08-01",
+   "amount": -459,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/455022961201/swiggy@ybl/Order 379"
+  },
+  {
+   "id": 91,
+   "date": "2026-08-01",
+   "amount": -774,
+   "category": "Groceries",
+   "merchant": "zepto",
+   "narration": "UPI/P2M/068536153051/zepto@okaxis/Grocery"
+  },
+  {
+   "id": 92,
+   "date": "2026-08-02",
+   "amount": -18000,
+   "category": "Rent",
+   "merchant": "ramesh patil",
+   "narration": "IMPS/020539502402/RAMESH PATIL/RENT AUG 2026"
+  },
+  {
+   "id": 93,
+   "date": "2026-08-02",
+   "amount": -396,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/525459910229/zomato@icici/Order 529"
+  },
+  {
+   "id": 94,
+   "date": "2026-08-02",
+   "amount": -180,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/852772217043/uber@axisbank/Ride"
+  },
+  {
+   "id": 95,
+   "date": "2026-08-03",
+   "amount": -6500,
+   "category": "EMI & Loans",
+   "merchant": "bajaj finserv",
+   "narration": "NACH/DR/BAJAJ FINSERV LTD/EMI 68117758"
+  },
+  {
+   "id": 96,
+   "date": "2026-08-03",
+   "amount": -118,
+   "category": "Transport",
+   "merchant": "rapido",
+   "narration": "UPI/P2M/798089324609/rapido@ybl/Ride"
+  },
+  {
+   "id": 97,
+   "date": "2026-08-04",
+   "amount": -5000,
+   "category": "Investments",
+   "merchant": "groww sip",
+   "narration": "NACH/DR/GROWW MF SIP/39084700"
+  },
+  {
+   "id": 98,
+   "date": "2026-08-05",
+   "amount": -649,
+   "category": "Subscriptions",
+   "merchant": "netflix",
+   "narration": "UPI/P2M/771159212499/netflix@icici/Autopay"
+  },
+  {
+   "id": 99,
+   "date": "2026-08-06",
+   "amount": -119,
+   "category": "Subscriptions",
+   "merchant": "spotify",
+   "narration": "UPI/P2M/856984789611/spotify@axisbank/Autopay"
+  },
+  {
+   "id": 100,
+   "date": "2026-08-07",
+   "amount": -299,
+   "category": "Subscriptions",
+   "merchant": "hotstar",
+   "narration": "UPI/P2M/836736576615/hotstar@ybl/Autopay"
+  },
+  {
+   "id": 101,
+   "date": "2026-08-07",
+   "amount": -337,
+   "category": "Food & Dining",
+   "merchant": "starbucks",
+   "narration": "UPI/P2M/733221418880/starbucks@hdfcbank/Cafe"
+  },
+  {
+   "id": 102,
+   "date": "2026-08-08",
+   "amount": -393,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/679764381561/swiggy@ybl/Order 378"
+  },
+  {
+   "id": 103,
+   "date": "2026-08-08",
+   "amount": -236,
+   "category": "Transport",
+   "merchant": "rapido",
+   "narration": "UPI/P2M/621851888880/rapido@ybl/Ride"
+  },
+  {
+   "id": 104,
+   "date": "2026-08-09",
+   "amount": -450,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/403690034324/zomato@icici/Order 639"
+  },
+  {
+   "id": 105,
+   "date": "2026-08-09",
+   "amount": -310,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/076226838851/zomato@icici/Order 435"
+  },
+  {
+   "id": 106,
+   "date": "2026-08-09",
+   "amount": -617,
+   "category": "Shopping",
+   "merchant": "amazon",
+   "narration": "UPI/P2M/165820297021/amazon@apl/Order"
+  },
+  {
+   "id": 107,
+   "date": "2026-08-09",
+   "amount": -2000,
+   "category": "Cash Withdrawal",
+   "merchant": "atm",
+   "narration": "ATM WDL/NFS/556909275571/MUMBAI ANDHERI W"
+  },
+  {
+   "id": 108,
+   "date": "2026-08-10",
+   "amount": -1499,
+   "category": "Subscriptions",
+   "merchant": "cultfit gym",
+   "narration": "UPI/P2M/654527111161/cultfit@ybl/Gym membership"
+  },
+  {
+   "id": 109,
+   "date": "2026-08-12",
+   "amount": -299,
+   "category": "Utilities & Bills",
+   "merchant": "jio",
+   "narration": "UPI/P2M/528098851656/jio@ybl/Recharge"
+  },
+  {
+   "id": 110,
+   "date": "2026-08-13",
+   "amount": -1173,
+   "category": "Transfers",
+   "merchant": "Amit Kulkarni",
+   "narration": "UPI/P2A/814473947312/amit.k@ybl/Split"
+  },
+  {
+   "id": 111,
+   "date": "2026-08-15",
+   "amount": -1252,
+   "category": "Utilities & Bills",
+   "merchant": "adani electricity",
+   "narration": "UPI/P2M/494519832731/adanielectricity@icici/Electricity bill"
+  },
+  {
+   "id": 112,
+   "date": "2026-08-15",
+   "amount": -284,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/715969664160/swiggy@ybl/Order 546"
+  },
+  {
+   "id": 113,
+   "date": "2026-08-15",
+   "amount": -485,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/975161369681/zomato@icici/Order 275"
+  },
+  {
+   "id": 114,
+   "date": "2026-08-15",
+   "amount": -638,
+   "category": "Groceries",
+   "merchant": "zepto",
+   "narration": "UPI/P2M/688623924075/zepto@okaxis/Grocery"
+  },
+  {
+   "id": 115,
+   "date": "2026-08-15",
+   "amount": -1112,
+   "category": "Transfers",
+   "merchant": "Rahul Sharma",
+   "narration": "UPI/P2A/271551884422/rahul.sharma@okicici/Split"
+  },
+  {
+   "id": 116,
+   "date": "2026-08-16",
+   "amount": -366,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/352181883552/zomato@icici/Order 863"
+  },
+  {
+   "id": 117,
+   "date": "2026-08-16",
+   "amount": -317,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/432921277997/swiggy@ybl/Order 205"
+  },
+  {
+   "id": 118,
+   "date": "2026-08-17",
+   "amount": -1122,
+   "category": "Transfers",
+   "merchant": "Priya Nair",
+   "narration": "UPI/P2A/313237058957/priya.n@oksbi/Split"
+  },
+  {
+   "id": 119,
+   "date": "2026-08-18",
+   "amount": -18999,
+   "category": "Shopping",
+   "merchant": "croma",
+   "narration": "UPI/P2M/753556093204/croma@hdfcbank/Electronics"
+  },
+  {
+   "id": 120,
+   "date": "2026-08-20",
+   "amount": -590,
+   "category": "Fees & Charges",
+   "merchant": "late fee",
+   "narration": "CHARGES/LATE PAYMENT FEE/CC OUTSTANDING/89964235"
+  },
+  {
+   "id": 121,
+   "date": "2026-08-22",
+   "amount": -392,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/177449058147/zomato@icici/Order 254"
+  },
+  {
+   "id": 122,
+   "date": "2026-08-22",
+   "amount": -294,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/541199867980/zomato@icici/Order 138"
+  },
+  {
+   "id": 123,
+   "date": "2026-08-22",
+   "amount": -336,
+   "category": "Food & Dining",
+   "merchant": "starbucks",
+   "narration": "UPI/P2M/929622292706/starbucks@hdfcbank/Cafe"
+  },
+  {
+   "id": 124,
+   "date": "2026-08-22",
+   "amount": -593,
+   "category": "Groceries",
+   "merchant": "zepto",
+   "narration": "UPI/P2M/794738347359/zepto@okaxis/Grocery"
+  },
+  {
+   "id": 125,
+   "date": "2026-08-22",
+   "amount": -1105,
+   "category": "Shopping",
+   "merchant": "amazon",
+   "narration": "UPI/P2M/479627570596/amazon@apl/Order"
+  },
+  {
+   "id": 126,
+   "date": "2026-08-23",
+   "amount": -434,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/782071518203/swiggy@ybl/Order 429"
+  },
+  {
+   "id": 127,
+   "date": "2026-08-23",
+   "amount": -414,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/892554665905/zomato@icici/Order 549"
+  },
+  {
+   "id": 128,
+   "date": "2026-08-23",
+   "amount": -878,
+   "category": "Groceries",
+   "merchant": "blinkit",
+   "narration": "UPI/P2M/141247826137/blinkit@paytm/Grocery"
+  },
+  {
+   "id": 129,
+   "date": "2026-08-25",
+   "amount": -2000,
+   "category": "Cash Withdrawal",
+   "merchant": "atm",
+   "narration": "ATM WDL/NFS/928565431027/MUMBAI ANDHERI W"
+  },
+  {
+   "id": 130,
+   "date": "2026-08-26",
+   "amount": -127,
+   "category": "Transport",
+   "merchant": "rapido",
+   "narration": "UPI/P2M/204727790104/rapido@ybl/Ride"
+  },
+  {
+   "id": 131,
+   "date": "2026-08-26",
+   "amount": -141,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/054868740345/uber@axisbank/Ride"
+  },
+  {
+   "id": 132,
+   "date": "2026-08-26",
+   "amount": -222,
+   "category": "Transport",
+   "merchant": "rapido",
+   "narration": "UPI/P2M/416169284511/rapido@ybl/Ride"
+  },
+  {
+   "id": 133,
+   "date": "2026-08-27",
+   "amount": -128,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/898614341036/uber@axisbank/Ride"
+  },
+  {
+   "id": 134,
+   "date": "2026-08-28",
+   "amount": -210,
+   "category": "Transport",
+   "merchant": "rapido",
+   "narration": "UPI/P2M/065405153195/rapido@ybl/Ride"
+  },
+  {
+   "id": 135,
+   "date": "2026-08-28",
+   "amount": -257,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/541566765277/uber@axisbank/Ride"
+  },
+  {
+   "id": 136,
+   "date": "2026-08-29",
+   "amount": -422,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/644925192546/zomato@icici/Order 196"
+  },
+  {
+   "id": 137,
+   "date": "2026-08-30",
+   "amount": -423,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/652816850542/swiggy@ybl/Order 417"
+  },
+  {
+   "id": 138,
+   "date": "2026-09-01",
+   "amount": 65000,
+   "category": "Income",
+   "merchant": "acme tech",
+   "narration": "NEFT CR:HDFC0000123:ACME TECH PVT LTD:SALARY SEP 2026:N829114678669"
+  },
+  {
+   "id": 139,
+   "date": "2026-09-02",
+   "amount": -18000,
+   "category": "Rent",
+   "merchant": "ramesh patil",
+   "narration": "IMPS/125177852892/RAMESH PATIL/RENT SEP 2026"
+  },
+  {
+   "id": 140,
+   "date": "2026-09-02",
+   "amount": -252,
+   "category": "Food & Dining",
+   "merchant": "starbucks",
+   "narration": "UPI/P2M/499154788728/starbucks@hdfcbank/Cafe"
+  },
+  {
+   "id": 141,
+   "date": "2026-09-02",
+   "amount": -230,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/839822587139/uber@axisbank/Ride"
+  },
+  {
+   "id": 142,
+   "date": "2026-09-03",
+   "amount": -6500,
+   "category": "EMI & Loans",
+   "merchant": "bajaj finserv",
+   "narration": "NACH/DR/BAJAJ FINSERV LTD/EMI 26801824"
+  },
+  {
+   "id": 143,
+   "date": "2026-09-03",
+   "amount": -220,
+   "category": "Transport",
+   "merchant": "rapido",
+   "narration": "UPI/P2M/707286790874/rapido@ybl/Ride"
+  },
+  {
+   "id": 144,
+   "date": "2026-09-04",
+   "amount": -5000,
+   "category": "Investments",
+   "merchant": "groww sip",
+   "narration": "NACH/DR/GROWW MF SIP/58414384"
+  },
+  {
+   "id": 145,
+   "date": "2026-09-05",
+   "amount": -649,
+   "category": "Subscriptions",
+   "merchant": "netflix",
+   "narration": "UPI/P2M/182992299590/netflix@icici/Autopay"
+  },
+  {
+   "id": 146,
+   "date": "2026-09-05",
+   "amount": -407,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/016873395004/zomato@icici/Order 415"
+  },
+  {
+   "id": 147,
+   "date": "2026-09-05",
+   "amount": -505,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/748016245650/zomato@icici/Order 711"
+  },
+  {
+   "id": 148,
+   "date": "2026-09-06",
+   "amount": -119,
+   "category": "Subscriptions",
+   "merchant": "spotify",
+   "narration": "UPI/P2M/010943969078/spotify@axisbank/Autopay"
+  },
+  {
+   "id": 149,
+   "date": "2026-09-06",
+   "amount": -423,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/358416878499/swiggy@ybl/Order 683"
+  },
+  {
+   "id": 150,
+   "date": "2026-09-06",
+   "amount": -304,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/655852398680/swiggy@ybl/Order 231"
+  },
+  {
+   "id": 151,
+   "date": "2026-09-06",
+   "amount": -765,
+   "category": "Groceries",
+   "merchant": "zepto",
+   "narration": "UPI/P2M/841459332727/zepto@okaxis/Grocery"
+  },
+  {
+   "id": 152,
+   "date": "2026-09-06",
+   "amount": -227,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/682300478686/uber@axisbank/Ride"
+  },
+  {
+   "id": 153,
+   "date": "2026-09-07",
+   "amount": -299,
+   "category": "Subscriptions",
+   "merchant": "hotstar",
+   "narration": "UPI/P2M/447364710276/hotstar@ybl/Autopay"
+  },
+  {
+   "id": 154,
+   "date": "2026-09-08",
+   "amount": -807,
+   "category": "Groceries",
+   "merchant": "zepto",
+   "narration": "UPI/P2M/454990453017/zepto@okaxis/Grocery"
+  },
+  {
+   "id": 155,
+   "date": "2026-09-08",
+   "amount": -207,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/524310690331/uber@axisbank/Ride"
+  },
+  {
+   "id": 156,
+   "date": "2026-09-08",
+   "amount": -237,
+   "category": "Transport",
+   "merchant": "rapido",
+   "narration": "UPI/P2M/599534283644/rapido@ybl/Ride"
+  },
+  {
+   "id": 157,
+   "date": "2026-09-09",
+   "amount": -547,
+   "category": "Groceries",
+   "merchant": "zepto",
+   "narration": "UPI/P2M/152742054932/zepto@okaxis/Grocery"
+  },
+  {
+   "id": 158,
+   "date": "2026-09-10",
+   "amount": -1499,
+   "category": "Subscriptions",
+   "merchant": "cultfit gym",
+   "narration": "UPI/P2M/773592555625/cultfit@ybl/Gym membership"
+  },
+  {
+   "id": 159,
+   "date": "2026-09-10",
+   "amount": -194,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/226567661825/uber@axisbank/Ride"
+  },
+  {
+   "id": 160,
+   "date": "2026-09-10",
+   "amount": -2000,
+   "category": "Cash Withdrawal",
+   "merchant": "atm",
+   "narration": "ATM WDL/NFS/287334270866/MUMBAI ANDHERI W"
+  },
+  {
+   "id": 161,
+   "date": "2026-09-12",
+   "amount": -299,
+   "category": "Utilities & Bills",
+   "merchant": "jio",
+   "narration": "UPI/P2M/881537147321/jio@ybl/Recharge"
+  },
+  {
+   "id": 162,
+   "date": "2026-09-12",
+   "amount": -462,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/578729825952/swiggy@ybl/Order 240"
+  },
+  {
+   "id": 163,
+   "date": "2026-09-13",
+   "amount": -366,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/888794705516/zomato@icici/Order 707"
+  },
+  {
+   "id": 164,
+   "date": "2026-09-13",
+   "amount": -510,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/097499309728/zomato@icici/Order 915"
+  },
+  {
+   "id": 165,
+   "date": "2026-09-13",
+   "amount": -155,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/039106518017/uber@axisbank/Ride"
+  },
+  {
+   "id": 166,
+   "date": "2026-09-14",
+   "amount": -230,
+   "category": "Transport",
+   "merchant": "rapido",
+   "narration": "UPI/P2M/783391878519/rapido@ybl/Ride"
+  },
+  {
+   "id": 167,
+   "date": "2026-09-15",
+   "amount": -1251,
+   "category": "Utilities & Bills",
+   "merchant": "adani electricity",
+   "narration": "UPI/P2M/469632595327/adanielectricity@icici/Electricity bill"
+  },
+  {
+   "id": 168,
+   "date": "2026-09-18",
+   "amount": -1711,
+   "category": "Shopping",
+   "merchant": "amazon",
+   "narration": "UPI/P2M/268705685662/amazon@apl/Order"
+  },
+  {
+   "id": 169,
+   "date": "2026-09-19",
+   "amount": -454,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/309130756263/swiggy@ybl/Order 941"
+  },
+  {
+   "id": 170,
+   "date": "2026-09-19",
+   "amount": -478,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/970283857865/zomato@icici/Order 613"
+  },
+  {
+   "id": 171,
+   "date": "2026-09-20",
+   "amount": -367,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/854973348434/zomato@icici/Order 645"
+  },
+  {
+   "id": 172,
+   "date": "2026-09-20",
+   "amount": -98,
+   "category": "Transport",
+   "merchant": "uber",
+   "narration": "UPI/P2M/790306738302/uber@axisbank/Ride"
+  },
+  {
+   "id": 173,
+   "date": "2026-09-23",
+   "amount": -2000,
+   "category": "Cash Withdrawal",
+   "merchant": "atm",
+   "narration": "ATM WDL/NFS/882634351751/MUMBAI ANDHERI W"
+  },
+  {
+   "id": 174,
+   "date": "2026-09-24",
+   "amount": -790,
+   "category": "Transfers",
+   "merchant": "Amit Kulkarni",
+   "narration": "UPI/P2A/304699013983/amit.k@ybl/Split"
+  },
+  {
+   "id": 175,
+   "date": "2026-09-25",
+   "amount": -272,
+   "category": "Food & Dining",
+   "merchant": "starbucks",
+   "narration": "UPI/P2M/938026206724/starbucks@hdfcbank/Cafe"
+  },
+  {
+   "id": 176,
+   "date": "2026-09-25",
+   "amount": -1122,
+   "category": "Transfers",
+   "merchant": "Priya Nair",
+   "narration": "UPI/P2A/467854458771/priya.n@oksbi/Split"
+  },
+  {
+   "id": 177,
+   "date": "2026-09-26",
+   "amount": -460,
+   "category": "Food & Dining",
+   "merchant": "swiggy",
+   "narration": "UPI/P2M/757584419866/swiggy@ybl/Order 806"
+  },
+  {
+   "id": 178,
+   "date": "2026-09-26",
+   "amount": -485,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/240415747338/zomato@icici/Order 891"
+  },
+  {
+   "id": 179,
+   "date": "2026-09-27",
+   "amount": -307,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/993308330165/zomato@icici/Order 240"
+  },
+  {
+   "id": 180,
+   "date": "2026-09-27",
+   "amount": -454,
+   "category": "Food & Dining",
+   "merchant": "zomato",
+   "narration": "UPI/P2M/208267734540/zomato@icici/Order 202"
+  },
+  {
+   "id": 181,
+   "date": "2026-09-27",
+   "amount": -787,
+   "category": "Groceries",
+   "merchant": "zepto",
+   "narration": "UPI/P2M/851612275304/zepto@okaxis/Grocery"
+  },
+  {
+   "id": 182,
+   "date": "2026-09-28",
+   "amount": -865,
+   "category": "Transfers",
+   "merchant": "Rahul Sharma",
+   "narration": "UPI/P2A/540331739363/rahul.sharma@okicici/Split"
+  }
+ ]
+}

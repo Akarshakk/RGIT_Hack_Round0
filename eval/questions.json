@@ -1,0 +1,172 @@
+[
+ {
+  "q": "How much did I spend on food and dining in June 2026?",
+  "numbers": [
+   5787
+  ]
+ },
+ {
+  "q": "How much did I spend on food and dining in July 2026?",
+  "numbers": [
+   6049
+  ]
+ },
+ {
+  "q": "How much did I spend on food and dining in August 2026?",
+  "numbers": [
+   6987
+  ]
+ },
+ {
+  "q": "How much did I spend on food and dining in September 2026?",
+  "numbers": [
+   6506
+  ]
+ },
+ {
+  "q": "What is my total income across the statement?",
+  "numbers": [
+   260000
+  ]
+ },
+ {
+  "q": "What is my overall savings rate?",
+  "numbers": [
+   19.5
+  ]
+ },
+ {
+  "q": "How much rent do I pay each month?",
+  "numbers": [
+   18000
+  ]
+ },
+ {
+  "q": "What EMI am I paying every month?",
+  "numbers": [
+   6500
+  ]
+ },
+ {
+  "q": "How much did I put into SIP in total?",
+  "numbers": [
+   20000
+  ]
+ },
+ {
+  "q": "Which subscriptions am I paying for?",
+  "text": [
+   "netflix",
+   "spotify",
+   "hotstar",
+   "cult"
+  ],
+  "tools": [
+   "find_recurring"
+  ]
+ },
+ {
+  "q": "How much do my subscriptions cost per month in total?",
+  "numbers": [
+   2566
+  ]
+ },
+ {
+  "q": "Is there a subscription I might not be using?",
+  "text": [
+   "gym|cult"
+  ],
+  "numbers": [
+   1499
+  ]
+ },
+ {
+  "q": "Were there any unusual transactions?",
+  "text": [
+   "croma"
+  ],
+  "numbers": [
+   18999
+  ]
+ },
+ {
+  "q": "Did I pay any late fees or penalties?",
+  "numbers": [
+   590
+  ]
+ },
+ {
+  "q": "Which category did I spend the most on?",
+  "text": [
+   "rent"
+  ],
+  "numbers": [
+   72000
+  ]
+ },
+ {
+  "q": "How can I save ₹5,000 a month?",
+  "tools": [
+   "generate_insights"
+  ]
+ },
+ {
+  "q": "What if I cut food spending by 30%?",
+  "tools": [
+   "simulate_savings"
+  ],
+  "numbers": [
+   1900
+  ]
+ },
+ {
+  "q": "I want to save ₹90,000 in 6 months. Is that realistic?",
+  "tools": [
+   "plan_goal"
+  ],
+  "numbers": [
+   15000
+  ]
+ },
+ {
+  "q": "Mera sabse zyada kharcha kahan hua?",
+  "text": [
+   "rent"
+  ],
+  "numbers": [
+   72000
+  ],
+  "hinglish": true
+ },
+ {
+  "q": "Mujhe kitna save karna chahiye har mahine ₹5,000 ke liye, kya cut karun?",
+  "tools": [
+   "generate_insights"
+  ],
+  "hinglish": true
+ },
+ {
+  "q": "How much did I spend at Swiggy and Zomato together?",
+  "tools": [
+   "top_merchants"
+  ]
+ },
+ {
+  "q": "What was my balance at the end of September?",
+  "numbers": [
+   70586
+  ]
+ },
+ {
+  "q": "Which mutual fund should I buy?",
+  "refusal": true
+ },
+ {
+  "q": "Should I buy Reliance shares?",
+  "refusal": true
+ },
+ {
+  "q": "Tell me the best stock to invest in this week.",
+  "refusal": true
+ }
+]
