@@ -15,17 +15,27 @@ const color = (c) => CAT_COLOR[c] || "#a3b8b2";
 
 let categories = [], story = null, aiQuips = {}, data = null, txAll = [], txFilter = null, lastFile = null;
 
-// Sessions live in server memory. On serverless hosting a new instance may not have yours, so if the server answers
-// 401 we quietly re-send the same statement once and retry. Nothing is stored in the browser beyond this page.
-let replay = null, replaying = null;
-async function api(url, opts) {
-  let r = await fetch(url, opts);
-  if (r.status === 401 && replay) {
-    replaying = replaying || replay().finally(() => setTimeout(() => (replaying = null), 0));
-    const u = await replaying;
-    if (u.ok) r = await fetch(url, opts);
-  }
-  return r;
+// The processed statement lives in this page's memory only (never in storage). Every data call sends it along, so
+// whichever server instance answers can work from it. Closing or reloading the tab forgets it.
+let BLOB = null;
+function api(url, opts = {}) {
+  if (!BLOB) return fetch(url, opts);
+  let body = {};
+  if (opts.body) { try { body = JSON.parse(opts.body); } catch { body = {}; } }
+  return fetch(url, {
+    ...opts,
+    method: opts.method && opts.method !== "GET" ? opts.method : "POST",
+    headers: { ...(opts.headers || {}), "content-type": "application/json" },
+    body: JSON.stringify({ ...body, blob: BLOB }),
+  });
+}
+
+function backToLanding(message) {
+  BLOB = null;
+  $("story").hidden = true; $("loader").hidden = true;
+  $("app").hidden = true; $("dashActions").hidden = true; $("landing").hidden = false;
+  $("upErr").textContent = message || "";
+  window.scrollTo({ top: 0 });
 }
 
 document.querySelectorAll("[data-logo]").forEach((m) => (m.innerHTML = Wrapped.LOGO));
@@ -43,7 +53,7 @@ const uploadFile = (f) => { lastFile = f; run(() => fetch("/upload", { method: "
 const drop = $("drop");
 drop.addEventListener("click", () => $("file").click());
 drop.addEventListener("keydown", (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), $("file").click()));
-$("file").addEventListener("change", (e) => e.target.files[0] && uploadFile(e.target.files[0]));
+$("file").addEventListener("change", (e) => { const f = e.target.files[0]; e.target.value = ""; if (f) uploadFile(f); });
 ["dragenter", "dragover"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add("over"); }));
 ["dragleave", "dragend"].forEach((t) => drop.addEventListener(t, () => drop.classList.remove("over")));
 drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("over"); e.dataTransfer.files[0] && uploadFile(e.dataTransfer.files[0]); });
@@ -81,8 +91,7 @@ async function run(request) {
   let res, j;
   try {
     res = await request();
-    replay = request;
-    j = await res.json();
+    j = await res.json().catch(() => ({ detail: res.status === 413 ? "That file is too large. Try a statement under 4 MB." : `The server returned an error (${res.status}). Try again.` }));
   } catch {
     L.hidden = true;
     $("upErr").textContent = "Couldn't reach the server. Check that it's running and try again.";
@@ -95,6 +104,7 @@ async function run(request) {
     if (/password/i.test(j.detail || "")) $("pw").focus();
     return;
   }
+  BLOB = j.blob || null;
   stepTo(1);
   const [tx, st, status] = await Promise.all([
     api("/transactions?limit=20000").then((r) => r.json()),
@@ -148,14 +158,14 @@ function showDashboard() {
 
 $("replayBtn").onclick = () => Wrapped.open(story, { ai: aiQuips, onClose: showDashboard });
 $("shareBtn").onclick = () => Wrapped.shareCard(story);
-$("delBtn").onclick = async () => { await fetch("/session", { method: "DELETE" }); location.href = "/"; };
+$("delBtn").onclick = async () => { await api("/session", { method: "DELETE" }); BLOB = null; location.href = "/"; };
 
 // ================= dashboard =================
 const hoursOf = (amt) => (story?.hourly ? Math.round(amt / story.hourly) : null);
 
 async function renderDashboard() {
   const r = await api("/overview");
-  if (!r.ok) { await fetch("/session", { method: "DELETE" }); return location.reload(); } // session gone and nothing to replay
+  if (!r.ok) return backToLanding("Your statement is no longer loaded (it's kept for 30 minutes). Drop it again to continue.");
   data = await r.json();
   const o = data.overview;
   const hrs = hoursOf(o.spend);
@@ -433,7 +443,9 @@ async function renderTx() {
       <td class="a ${t.amount > 0 ? "cr" : ""}">${t.amount > 0 ? "+" : ""}${inr(t.amount)}</td>
       <td><select data-m="${esc(t.merchant)}" style="--c:${color(t.category)}" aria-label="Category for ${esc(t.merchant)}">${categories.map((c) => `<option${c === t.category ? " selected" : ""}>${esc(c)}</option>`).join("")}</select></td></tr>`).join("");
   $("tx").querySelectorAll("select").forEach((s) => (s.onchange = async () => {
-    await api("/recategorize", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ merchant: s.dataset.m, category: s.value }) });
+    const rr = await api("/recategorize", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ merchant: s.dataset.m, category: s.value }) });
+    const jj = await rr.json().catch(() => ({}));
+    if (jj.blob) BLOB = jj.blob;
     story = await (await api("/wrapped")).json();
     renderDashboard();
   }));
@@ -557,12 +569,5 @@ async function ask(text) {
   } finally { busy = false; }
 }
 
-// ================= resume a live session =================
-fetch("/status").then((r) => r.json()).then(async (s) => {
-  categories = s.categories;
-  setChatStatus(s.chat_enabled);
-  if (!s.has_session) return;
-  story = await (await api("/wrapped")).json();
-  await renderDashboard();
-  showDashboard();
-});
+// ================= start =================
+fetch("/status").then((r) => r.json()).then((st) => { categories = st.categories; setChatStatus(st.chat_enabled); }).catch(() => {});

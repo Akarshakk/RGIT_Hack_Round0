@@ -34,7 +34,7 @@ Samples: **Try the sample statement** (HDFC-style CSV), **Try the locked PDF** (
 
 Works on Python 3.9+ (tested on 3.9.6 and 3.12).
 
-**Deploy:** deployed on Vercel (`vercel.json` + `index.py`; `vercel deploy --prod`, env var `GROQ_API_KEY`). Sessions live in server memory, so if a request lands on a fresh serverless instance the page quietly re-sends the statement once. Render also works: *New → Blueprint* → pick this repo; `render.yaml` sets everything up. Elsewhere: start command `uvicorn app.main:app --host 0.0.0.0 --port $PORT`. Groq's free tier allows 8k tokens a minute and 200k a day per model; use a Dev-tier key for a public demo.
+**Deploy:** deployed on Vercel (`vercel.json` + `index.py`; `vercel deploy --prod`, env var `GROQ_API_KEY`). The server is stateless across instances: after upload the page keeps a compressed copy of the processed statement in memory (never in storage) and sends it with each request, so any serverless instance can answer; each instance caches it for 30 minutes. Render also works: *New → Blueprint* → pick this repo; `render.yaml` sets everything up. Elsewhere: start command `uvicorn app.main:app --host 0.0.0.0 --port $PORT`. Groq's free tier allows 8k tokens a minute and 200k a day per model; use a Dev-tier key for a public demo.
 
 ## Checks
 ```bash

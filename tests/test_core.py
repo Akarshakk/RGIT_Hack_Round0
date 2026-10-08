@@ -233,6 +233,32 @@ def test_second_persona_is_data_driven():
     assert an.friend_ledger(df)["received"] > 0 and "Zomato" not in json.dumps(cards)
 
 
+def test_stateless_across_instances():
+    """Every request may land on a fresh serverless instance: the statement blob alone must be enough."""
+    from fastapi.testclient import TestClient
+    from app import main
+    c = TestClient(main.app)
+    up = c.post("/sample?kind=pdf").json()
+    blob = up["blob"]
+    assert up["rows"] == TRUTH["row_count"] and len(blob) < 60000
+    for path in ("/overview", "/transactions?limit=5", "/wrapped", "/future?years=5", "/insights"):
+        main.SESSIONS.clear(); c.cookies.clear()
+        r = c.post(path, json={"blob": blob})
+        assert r.status_code == 200, (path, r.status_code, r.text[:200])
+    main.SESSIONS.clear(); c.cookies.clear()
+    ov = c.post("/overview", json={"blob": blob}).json()
+    assert ov["overview"]["income"] == TRUTH["total_credit"]
+    main.SESSIONS.clear(); c.cookies.clear()
+    r = c.post("/recategorize", json={"merchant": "starbucks", "category": "Entertainment", "blob": blob}).json()
+    main.SESSIONS.clear(); c.cookies.clear()
+    cats = {x["category"]: x["amount"] for x in c.post("/overview", json={"blob": r["blob"]}).json()["categories"]}
+    assert cats["Entertainment"] == 2777 and cats["Food & Dining"] == 25329 - 2777
+    main.SESSIONS.clear(); c.cookies.clear()
+    assert c.post("/simulate", json={"changes": [{"category": "Food & Dining", "cut_pct": 30}], "blob": blob}).json()["monthly_saving"] == 1900
+    main.SESSIONS.clear(); c.cookies.clear()
+    assert c.get("/overview").status_code == 401
+
+
 if __name__ == "__main__":
     for k, v in list(globals().items()):
         if k.startswith("test_"):
