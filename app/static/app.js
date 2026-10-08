@@ -479,7 +479,9 @@ function setChatStatus(on) {
   $("chatStatus").textContent = on ? "Numbers come from your statement, never guessed" : "AI chat is off: add GROQ_API_KEY to .env and restart";
 }
 
+const EMOJI = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu;
 function md(src) {
+  src = src.replace(EMOJI, "");
   const lines = esc(src).split("\n"), out = [];
   let list = null, table = null;
   const inline = (s) => s.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/(^|\W)\*(\S.*?)\*(?=\W|$)/g, "$1<em>$2</em>").replace(/`([^`]+)`/g, "<code>$1</code>");
@@ -542,14 +544,14 @@ async function ask(text) {
           const b = document.createElement("div");
           const ok = !d.unverified.length;
           b.className = "ground " + (ok ? "ok" : "warn");
-          b.textContent = ok ? `✓ ${d.verified}/${d.total} numbers verified against your statement` : `⚠ ${d.verified}/${d.total} verified · not from your data: ${d.unverified.join(", ")}`;
+          b.textContent = ok ? `${d.verified}/${d.total} numbers verified against your statement` : `${d.verified}/${d.total} verified · not from your data: ${d.unverified.join(", ")}`;
           b.title = "Every ₹ amount and % in this answer was checked against the tool results (receipts) for this turn.";
           chips.after(b);
           $("msgs").scrollTop = 1e9;
         }
         else if (ev === "receipt") {
           const c = document.createElement("button");
-          c.type = "button"; c.className = "receipt"; c.textContent = "🧾 " + d.tool.replace(/_/g, " ");
+          c.type = "button"; c.className = "receipt"; c.textContent = d.tool.replace(/_/g, " ");
           c.onclick = () => {
             const open = c.nextElementSibling?.tagName === "PRE";
             chips.querySelectorAll("pre").forEach((p) => p.remove());
