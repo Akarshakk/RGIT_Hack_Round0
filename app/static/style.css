@@ -439,9 +439,6 @@ main { position: relative; z-index: 1; }
 .receipt { background: rgba(155,227,195,.08); border: 1px solid rgba(155,227,195,.3); color: var(--mint); border-radius: 999px; padding: 4px 11px; font: 500 12px var(--f-mono); }
 .receipt:hover, .receipt.open { background: var(--mint); color: var(--ink); }
 pre.rbox { flex-basis: 100%; background: var(--ink); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font: 400 11.5px/1.45 var(--f-mono); color: var(--mint); max-height: 220px; overflow: auto; white-space: pre-wrap; }
-.sugg { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 10px; }
-.sugg button { background: transparent; border: 1px solid var(--line-2); border-radius: 999px; padding: 6px 12px; font-size: 13px; color: var(--muted); transition: all .2s; }
-.sugg button:hover { border-color: var(--turmeric); color: var(--cream); }
 .ask { display: flex; gap: 8px; padding: 12px 16px 16px; border-top: 1px solid var(--line); }
 .ask input { flex: 1; }
 

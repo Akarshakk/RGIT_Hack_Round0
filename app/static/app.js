@@ -452,9 +452,6 @@ async function renderTx() {
 }
 
 // ================= chat =================
-const SUGG = ["Where did most of my money go?", "How can I save ₹5,000 a month?", "Mera food ka kharcha kitna hai?", "What could I have in 10 years?", "Which mutual fund should I buy?"];
-$("sugg").innerHTML = SUGG.map((s) => `<button type="button">${esc(s)}</button>`).join("");
-$("sugg").querySelectorAll("button").forEach((b) => (b.onclick = () => ask(b.textContent)));
 $("askForm").onsubmit = (e) => { e.preventDefault(); ask($("q").value); };
 
 // voice: the browser's own speech recognition (Chrome, Edge, Safari). en-IN copes with Hinglish; no audio leaves via our server.
